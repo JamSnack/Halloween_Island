@@ -4,8 +4,12 @@
     <Config>Configs\Default</Config>
   </Configs>
   <NewExtensions/>
-  <sounds name="sound"/>
-  <sprites name="sprites"/>
+  <sounds name="sound">
+    <sound>sound\snd_battle_theme</sound>
+  </sounds>
+  <sprites name="sprites">
+    <sprite>sprites\spr_battle_monster</sprite>
+  </sprites>
   <backgrounds name="background">
     <background>background\bkg_battle_field</background>
   </backgrounds>
@@ -15,10 +19,15 @@
     <script>scripts\scr_musicTransition.gml</script>
     <script>scripts\scr_getBackground.gml</script>
     <script>scripts\scr_getMusic.gml</script>
+    <script>scripts\approach.gml</script>
   </scripts>
   <objects name="objects">
     <object>objects\obj_battleControl</object>
+    <object>objects\obj_battle_test</object>
   </objects>
+  <rooms name="rooms">
+    <room>rooms\rm_battle_test</room>
+  </rooms>
   <help>
     <rtf>help.rtf</rtf>
   </help>

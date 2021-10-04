@@ -25,24 +25,13 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///INITIALIZE VARAIBLES - BATTLE SPECIFICATIONS HANDLED WITH scr_startBattle();
-//FOR TASKA: The instantiation of this object begins a battle. Simply execute scr_startBattle();
-//and pass in the proper parameters to begin the fight.
-
-location = "GRASS"; //Current location for use in determining background and music.
-background = noone; //Container for future background reference
-battle_music = noone; //Music to use for the battle.
-
-//ENEMY VARIABLES
-enemy_id = noone; //List of enemy IDs. Noone if DNE. NOTE: Currently only 1 enemy ID is expected.
-enemy_sprite = spr_battle_monster;
-
+            <string>global.music = noone;
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="64">
+    <event eventtype="6" enumb="50">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -59,16 +48,12 @@ enemy_sprite = spr_battle_monster;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Draw the battle
-var window_width = 256;
-var window_height = 240;
-
-//Draw the background
-draw_background(bkg_battle_field,0,0);
-
-
-//Draw the enemy
-draw_sprite(spr_battle_monster,0,room_width/2,room_height/2);
+            <string>if !instance_exists(obj_battleControl)
+{
+    scr_startBattle(0,noone);
+    
+}
+else instance_destroy(obj_battleControl);
 </string>
           </argument>
         </arguments>
