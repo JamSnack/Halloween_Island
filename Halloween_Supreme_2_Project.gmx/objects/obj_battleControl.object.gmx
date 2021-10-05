@@ -36,7 +36,51 @@ battle_music = noone; //Music to use for the battle.
 //ENEMY VARIABLES
 enemy_id = noone; //List of enemy IDs. Noone if DNE. NOTE: Currently only 1 enemy ID is expected.
 enemy_sprite = spr_battle_monster;
+enemy_idle_offset = 8;
+enemy_idle_wave = random(360); //Interpolates between 0 and 360.
+reverse_idle = 0; //1 or 0. Determines whether or not to reverse the idle animation.
+enemy_name = noone;
+enemy_level = noone;
+enemy_hp = noone;
+enemy_max_hp = noone;
 
+//GAME CONTROL VARIABLES
+player_turn = true; //True = player turn, false = enemy turn.
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="3" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>//Animate the enemy
+enemy_idle_wave = approach(enemy_idle_wave,360-(360*reverse_idle),0.1);
+
+if enemy_idle_wave &gt;= 360
+{
+    reverse_idle = 1;
+    enemy_idle_wave = 360;
+}
+else if enemy_idle_wave &lt;= 0
+{
+    reverse_idle = 0;
+    enemy_idle_wave = 0;
+}
 </string>
           </argument>
         </arguments>
@@ -60,15 +104,19 @@ enemy_sprite = spr_battle_monster;
           <argument>
             <kind>1</kind>
             <string>///Draw the battle
-var window_width = 256;
-var window_height = 240;
+var wind_width = 256;
+var wind_height = 224;
+var wind_center_x = wind_width/2;
+var wind_center_y = wind_height/2;
 
 //Draw the background
 draw_background(bkg_battle_field,0,0);
 
-
 //Draw the enemy
-draw_sprite(spr_battle_monster,0,room_width/2,room_height/2);
+var _enemy_offset = enemy_idle_offset*sin(enemy_idle_wave);
+
+draw_sprite(spr_battle_monster,enemy_id,wind_center_x,wind_center_y+_enemy_offset);
+draw_text(wind_center_x-40,wind_center_y-64+_enemy_offset,enemy_name+" Lv. "+string(enemy_level)+"#HP: "+string(enemy_hp)+"/"+string(enemy_max_hp));
 </string>
           </argument>
         </arguments>

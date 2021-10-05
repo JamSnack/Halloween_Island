@@ -9,6 +9,7 @@
   </sounds>
   <sprites name="sprites">
     <sprite>sprites\spr_battle_monster</sprite>
+    <sprite>sprites\spr_ant</sprite>
   </sprites>
   <backgrounds name="background">
     <background>background\bkg_battle_field</background>
@@ -20,10 +21,12 @@
     <script>scripts\scr_getBackground.gml</script>
     <script>scripts\scr_getMusic.gml</script>
     <script>scripts\approach.gml</script>
+    <script>scripts\scr_getEnemyInfo.gml</script>
   </scripts>
   <objects name="objects">
     <object>objects\obj_battleControl</object>
     <object>objects\obj_battle_test</object>
+    <object>objects\obj_ant</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\rm_battle_test</room>
