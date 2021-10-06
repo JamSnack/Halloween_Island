@@ -30,7 +30,6 @@
 //Init font
 global.fnt_normal = font_add_sprite_ext(spr_fnt_ui,"!'#$%()*,-./0123456789:;&lt;=&gt;ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}.?+",0,0);
 
-
 //Init player
 enum STATS
 {
@@ -39,16 +38,18 @@ enum STATS
     maxMp,
     mp,
     attack,
-    defense
+    defense,
+    level
 }
 
-global.player_stats = array_create(6);
+global.player_stats = array_create(7);
 global.player_stats[STATS.maxHp] = 100; //Player maxHp
 global.player_stats[STATS.hp] = 100; //Player current HP
 global.player_stats[STATS.maxMp] = 100; //Player max MP
 global.player_stats[STATS.mp] = 100; //Player current MP
 global.player_stats[STATS.attack] = 1; //Attack stat
 global.player_stats[STATS.defense] = 0; //Defense stat
+global.player_stats[STATS.level] = 1; //Player level :)
 
 //Init mobID
 enum mobID
@@ -57,10 +58,17 @@ enum mobID
 }
 
 //Init actions
-enum battle_action
+enum battle_attack
 {
     slash,
+    fireball
 }
+
+//Init unlocked actions
+//Note: An unlocked attack is set to 1, otherwise the attack is set to 0.
+global.unlocked_attacks = array_create(2);
+global.unlocked_attacks[battle_attack.slash] = 1;
+global.unlocked_attacks[battle_attack.fireball] = 1;
 
 //Music
 global.music = noone;

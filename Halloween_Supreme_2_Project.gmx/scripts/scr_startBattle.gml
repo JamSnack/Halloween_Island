@@ -16,6 +16,11 @@ if !instance_exists(obj_battleControl)
     _bat.enemy_max_hp = _mob_data[2];
     _bat.enemy_hp = _mob_data[2];
     
+    with _bat
+    {
+        battle_string += (enemy_name+choose(" approaches!"," seeks violence."," engages you!")+"#");
+    }
+    
     
     scr_musicTransition(scr_getMusic(_location),1);
     

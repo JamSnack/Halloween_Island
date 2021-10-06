@@ -12,11 +12,13 @@
       <sprite>sprites\spr_battle_monster</sprite>
       <sprite>sprites\spr_ant</sprite>
       <sprite>sprites\spr_fnt_ui</sprite>
+      <sprite>sprites\spr_battle_option</sprite>
     </sprites>
     <sprites name="Taska's Sprites">
       <sprite>sprites\spr_text</sprite>
       <sprite>sprites\spr_tile_small</sprite>
     </sprites>
+    <sprite>sprites\spr_ui_battle_option_selector</sprite>
   </sprites>
   <backgrounds name="background">
     <backgrounds name="JamSnack's Backgrounds">
@@ -40,6 +42,7 @@
       <script>scripts\scr_getMusic.gml</script>
       <script>scripts\approach.gml</script>
       <script>scripts\scr_getEnemyInfo.gml</script>
+      <script>scripts\scr_getAttackInfo.gml</script>
       <script>scripts\scr_executeAction.gml</script>
       <script>scripts\scr_getBackground.gml</script>
       <script>scripts\scr_musicTransition.gml</script>
@@ -56,8 +59,8 @@
       <object>objects\obj_init</object>
       <object>objects\obj_ant</object>
       <object>objects\obj_battleControl</object>
+      <object>objects\obj_game_cntrl</object>
     </objects>
-    <object>objects\obj_game_cntrl</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\room_world</room>
