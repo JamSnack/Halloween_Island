@@ -8,29 +8,56 @@
     <sound>sound\snd_battle_theme</sound>
   </sounds>
   <sprites name="sprites">
-    <sprite>sprites\spr_battle_monster</sprite>
-    <sprite>sprites\spr_ant</sprite>
+    <sprites name="JamSnack's Sprites">
+      <sprite>sprites\spr_battle_monster</sprite>
+      <sprite>sprites\spr_ant</sprite>
+    </sprites>
+    <sprites name="Taska's Sprites">
+      <sprite>sprites\spr_text</sprite>
+      <sprite>sprites\spr_tile_small</sprite>
+    </sprites>
   </sprites>
   <backgrounds name="background">
-    <background>background\bkg_battle_field</background>
+    <backgrounds name="JamSnack's Backgrounds">
+      <background>background\bkg_battle_field</background>
+    </backgrounds>
+    <backgrounds name="Taska's Backgrounds">
+      <background>background\back_ocean</background>
+    </backgrounds>
   </backgrounds>
   <paths name="paths"/>
   <scripts name="scripts">
-    <script>scripts\scr_startBattle.gml</script>
-    <script>scripts\scr_musicTransition.gml</script>
-    <script>scripts\scr_getBackground.gml</script>
-    <script>scripts\scr_getMusic.gml</script>
-    <script>scripts\approach.gml</script>
-    <script>scripts\scr_getEnemyInfo.gml</script>
-    <script>scripts\scr_executeAction.gml</script>
+    <scripts name="Taska's Scripts">
+      <script>scripts\scr_init_vars.gml</script>
+      <script>scripts\scr_wind_scale.gml</script>
+      <script>scripts\scr_world_gen.gml</script>
+      <script>scripts\scr_world_gen_find_neighbors.gml</script>
+      <script>scripts\scr_world_gen_place_cluster.gml</script>
+      <script>scripts\scr_world_gen_place_tile.gml</script>
+    </scripts>
+    <scripts name="JamSnack's Scripts">
+      <script>scripts\scr_getMusic.gml</script>
+      <script>scripts\approach.gml</script>
+      <script>scripts\scr_getEnemyInfo.gml</script>
+      <script>scripts\scr_executeAction.gml</script>
+      <script>scripts\scr_getBackground.gml</script>
+      <script>scripts\scr_musicTransition.gml</script>
+      <script>scripts\scr_startBattle.gml</script>
+    </scripts>
   </scripts>
   <objects name="objects">
-    <object>objects\obj_battleControl</object>
-    <object>objects\obj_battle_test</object>
-    <object>objects\obj_ant</object>
-    <object>objects\obj_init</object>
+    <objects name="Taska">
+      <object>objects\obj_world_cntrl</object>
+    </objects>
+    <objects name="JamSnack">
+      <object>objects\obj_battle_test</object>
+      <object>objects\obj_init</object>
+      <object>objects\obj_ant</object>
+      <object>objects\obj_battleControl</object>
+    </objects>
   </objects>
   <rooms name="rooms">
+    <room>rooms\room_world</room>
     <room>rooms\rm_battle_test</room>
   </rooms>
   <help>
