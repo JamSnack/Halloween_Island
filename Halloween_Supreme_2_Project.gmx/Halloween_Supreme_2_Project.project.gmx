@@ -11,6 +11,7 @@
     <sprites name="JamSnack's Sprites">
       <sprite>sprites\spr_battle_monster</sprite>
       <sprite>sprites\spr_ant</sprite>
+      <sprite>sprites\spr_fnt_ui</sprite>
     </sprites>
     <sprites name="Taska's Sprites">
       <sprite>sprites\spr_text</sprite>
@@ -43,6 +44,7 @@
       <script>scripts\scr_getBackground.gml</script>
       <script>scripts\scr_musicTransition.gml</script>
       <script>scripts\scr_startBattle.gml</script>
+      <script>scripts\scr_fitText.gml</script>
     </scripts>
   </scripts>
   <objects name="objects">
@@ -55,6 +57,7 @@
       <object>objects\obj_ant</object>
       <object>objects\obj_battleControl</object>
     </objects>
+    <object>objects\obj_game_cntrl</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\room_world</room>
