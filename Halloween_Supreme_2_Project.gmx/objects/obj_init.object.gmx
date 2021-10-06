@@ -4,7 +4,7 @@
   <solid>0</solid>
   <visible>-1</visible>
   <depth>0</depth>
-  <persistent>0</persistent>
+  <persistent>-1</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
   <events>
@@ -25,34 +25,24 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///INITIALIZE VARAIBLES - BATTLE SPECIFICATIONS HANDLED WITH scr_startBattle();
-//FOR TASKA: The instantiation of this object begins a battle. Simply execute scr_startBattle();
-//and pass in the proper parameters to begin the fight.
+            <string>
+//Init mobID
+enum mobID
+{
+    sphere_elite,
+}
 
-location = "GRASS"; //Current location for use in determining background and music.
-background = noone; //Container for future background reference
-battle_music = noone; //Music to use for the battle.
-
-//ENEMY VARIABLES
-enemy_id = noone; //List of enemy IDs. Noone if DNE. NOTE: Currently only 1 enemy ID is expected.
-enemy_sprite = spr_battle_monster;
-enemy_idle_offset = 8;
-enemy_idle_wave = random(360); //Interpolates between 0 and 360.
-reverse_idle = 0; //1 or 0. Determines whether or not to reverse the idle animation. See the approach line in step event. (ln. 2)
-enemy_name = noone;
-enemy_level = noone;
-enemy_hp = noone;
-enemy_max_hp = noone;
-
-//GAME CONTROL VARIABLES
-player_turn = true; //True = player turn, false = enemy turn.
-chosen_action = noone; //Noone if no action is chosen; otherwise the name of the action.
+//Init actions
+enum battle_action
+{
+    slash,
+}
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="3" enumb="0">
+    <event eventtype="10" enumb="115">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -69,42 +59,14 @@ chosen_action = noone; //Noone if no action is chosen; otherwise the name of the
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//-----------Animate the enemy---------
-enemy_idle_wave = approach(enemy_idle_wave,360-(360*reverse_idle),0.1);
-
-if enemy_idle_wave &gt;= 360
-{
-    reverse_idle = 1;
-    enemy_idle_wave = 360;
-}
-else if enemy_idle_wave &lt;= 0
-{
-    reverse_idle = 0;
-    enemy_idle_wave = 0;
-}
-
-//----------Game Brain!----------------
-// game brain gaming gameing gamer
-if player_turn == true
-{
-    if chosen_action != noone
-    {
-        //Execute the chosen action
-        scr_executeAction(chosen_action);
-        chosen_action = noone;
-        player_turn = false;
-    }
-}
-else
-{
-    
-}
+            <string>///Resize Screen - Fullscreen
+window_set_fullscreen(true);
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="64">
+    <event eventtype="10" enumb="114">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -121,20 +83,62 @@ else
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Draw the battle
-var wind_width = 256;
-var wind_height = 224;
-var wind_center_x = wind_width/2;
-var wind_center_y = wind_height/2;
-
-//Draw the background
-draw_background(bkg_battle_field,0,0);
-
-//Draw the enemy
-var _enemy_offset = enemy_idle_offset*sin(enemy_idle_wave);
-
-draw_sprite(spr_battle_monster,enemy_id,wind_center_x,wind_center_y+_enemy_offset);
-draw_text(wind_center_x-40,wind_center_y-64+_enemy_offset,enemy_name+" Lv. "+string(enemy_level)+"#HP: "+string(enemy_hp)+"/"+string(enemy_max_hp));
+            <string>///Resize Screen - 3x
+window_set_fullscreen(false);
+window_set_size(256*3,224*3);
+window_center();
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="10" enumb="113">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Resize Screen - 2x
+window_set_fullscreen(false);
+window_set_size(256*2,224*2);
+window_center();
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="10" enumb="112">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Resize Screen - 1x
+window_set_fullscreen(false);
+window_set_size(256,224);
+window_center();
 </string>
           </argument>
         </arguments>

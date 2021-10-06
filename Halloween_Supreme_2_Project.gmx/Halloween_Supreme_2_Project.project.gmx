@@ -22,11 +22,13 @@
     <script>scripts\scr_getMusic.gml</script>
     <script>scripts\approach.gml</script>
     <script>scripts\scr_getEnemyInfo.gml</script>
+    <script>scripts\scr_executeAction.gml</script>
   </scripts>
   <objects name="objects">
     <object>objects\obj_battleControl</object>
     <object>objects\obj_battle_test</object>
     <object>objects\obj_ant</object>
+    <object>objects\obj_init</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\rm_battle_test</room>
