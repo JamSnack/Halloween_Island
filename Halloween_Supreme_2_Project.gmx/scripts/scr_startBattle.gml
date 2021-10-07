@@ -24,11 +24,11 @@ if !instance_exists(obj_battleControl)
     
     scr_musicTransition(scr_getMusic(_location),1);
     
-    //Who goes first?
-    if _mob_data[1] > 1 //NOTE: Replace with player level!
+    //Who goes first? - For now, always the player.
+    /*if _mob_data[1] > 1 //NOTE: Replace with player level!
         _bat.player_turn = false;
     else
-        _bat.player_turn = true;
+        _bat.player_turn = true;*/
     
     show_debug_message("A battle has begun!");
     show_debug_message("Player turn?: "+string(_bat.player_turn));

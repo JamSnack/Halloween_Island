@@ -43,7 +43,7 @@
       <script>scripts\approach.gml</script>
       <script>scripts\scr_getEnemyInfo.gml</script>
       <script>scripts\scr_getAttackInfo.gml</script>
-      <script>scripts\scr_executeAction.gml</script>
+      <script>scripts\scr_executeAttack.gml</script>
       <script>scripts\scr_getBackground.gml</script>
       <script>scripts\scr_musicTransition.gml</script>
       <script>scripts\scr_startBattle.gml</script>

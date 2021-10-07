@@ -59,6 +59,7 @@ attack_string = ""; //The text that lists the player's attack in battle.
 battle_string_max_length = 190; //The maximum length of the battle string.
 battle_string_max_height = 40; //The maximum height of the battle stirng.
 battle_exit = false; //Whether or not to run the battle exit sequence.
+possible_attacks = ds_list_create(); //Container for attacks to be available during battle. Destroyed in user_event0
 </string>
           </argument>
         </arguments>
@@ -81,23 +82,34 @@ battle_exit = false; //Whether or not to run the battle exit sequence.
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//-----------Animate the enemy---------
-enemy_idle_wave = approach(enemy_idle_wave,360-(360*reverse_idle),0.025);
+            <string>//------------Gather input-------------
+var key_select = (keyboard_check_released(vk_enter) || keyboard_check_released(ord('Z')));
+var key_left = (keyboard_check_released(vk_left) || keyboard_check_released(ord("A")));
+var key_right = (keyboard_check_released(vk_right) || keyboard_check_released(ord("D")));
+var key_cancel = (keyboard_check_released(ord('X')));
+var key_up = (keyboard_check_released(vk_up) || keyboard_check_released(ord("W")));
+var key_down = (keyboard_check_released(vk_down) || keyboard_check_released(ord("S")));
 
-if enemy_idle_wave &gt;= 360
+//-----------Animate the enemy---------
+if battle_exit == false
 {
-    reverse_idle = 1;
-    enemy_idle_wave = 360;
-}
-else if enemy_idle_wave &lt;= 0
-{
-    reverse_idle = 0;
-    enemy_idle_wave = 0;
-}
+    enemy_idle_wave = approach(enemy_idle_wave,360-(360*reverse_idle),0.025);
+    
+    if enemy_idle_wave &gt;= 360
+    {
+        reverse_idle = 1;
+        enemy_idle_wave = 360;
+    }
+    else if enemy_idle_wave &lt;= 0
+    {
+        reverse_idle = 0;
+        enemy_idle_wave = 0;
+    }
 
-// - z and y force
-if image_zForce != 0 { image_zForce = approach(image_zForce, 0, image_zForce/15 ); }
-if image_yForce != 1 { image_yForce = approach(image_yForce, 1, image_yForce/15 ); }
+// - z and y force approach 0 and 1 respectively.
+    if image_zForce != 0 { image_zForce = approach(image_zForce, 0, image_zForce/10 ); }
+    if image_yForce != 1 { image_yForce = approach(image_yForce, 1, image_yForce/10 ); }
+}
 
 image_angle += image_zForce;
 image_yscale = sin(image_yForce);
@@ -130,23 +142,15 @@ if image_angle != 0 &amp;&amp; image_zForce &lt;= 0.1
 // game brain gaming gameing gamer
 if player_turn == true &amp;&amp; battle_exit == false
 {
-    if chosen_action != noone
+ /*   if chosen_action != noone
     {
         //Execute the chosen action
-        scr_executeAction(chosen_action);
+        scr_executeAttack(chosen_action);
         chosen_action = noone;
         player_turn = false;
         battle_timer = 0;
-    }
-    
-    //Selection
-    var key_select = (keyboard_check_released(vk_enter) || keyboard_check_released(ord('Z')));
-    var key_left = (keyboard_check_released(vk_left) || keyboard_check_released(ord("A")));
-    var key_right = (keyboard_check_released(vk_right) || keyboard_check_released(ord("D")));
-    var key_cancel = (keyboard_check_released(ord('X')));
-    var key_up = (keyboard_check_released(vk_up) || keyboard_check_released(ord("W")));
-    var key_down = (keyboard_check_released(vk_down) || keyboard_check_released(ord("S")));
-    
+    }    
+    */
     //If an option is not selected, allow control of the action_selected pointer.
     if action_finalized == noone
     {
@@ -181,6 +185,8 @@ if player_turn == true &amp;&amp; battle_exit == false
         {
             case 0: //Attack options
             {
+                //An array that holds the player's possible attacks.
+                //Move the selection pointer
                 if key_up &amp;&amp; attack_action_selected &gt; 0
                 {
                     attack_action_selected -= 1;
@@ -190,7 +196,7 @@ if player_turn == true &amp;&amp; battle_exit == false
                     attack_action_selected += 1;
                 }
                 
-                //Construct the attack string.
+                //Construct the attack string and list the possible attacks
                 if attack_string == ""
                 {
                     for(str_index=0;str_index&lt;array_length_1d(global.unlocked_attacks);str_index++)
@@ -201,8 +207,19 @@ if player_turn == true &amp;&amp; battle_exit == false
                         {
                             var _data = scr_getAttackInfo(str_index);
                             attack_string += (_data[0]+"#");
+                            
+                            //add to our list of possible attacks
+                            ds_list_add(possible_attacks,str_index);
                         }
                     }
+                }
+                
+                //Select an option and execute that attack!
+                if key_select
+                {
+                    scr_executeAttack(possible_attacks[| attack_action_selected]);
+                    player_turn = false;
+                    battle_timer = 0;
                 }
             }
             break;
@@ -240,11 +257,13 @@ if player_turn == true &amp;&amp; battle_exit == false
 }
 else if battle_exit == false
 {
-    if battle_timer &gt; room_speed*1
+    if battle_timer &gt; room_speed*2
     {
         //The enemy executes an attack!
         global.player_stats[STATS.hp] -= enemy_level;
+        battle_string += ("You take "+string(enemy_level)+" damage.#");
         player_turn = true;
+        action_finalized = noone;
     }
 }
 
@@ -300,9 +319,65 @@ if string_height(attack_string) &gt; battle_string_max_height
 }
 
 //-------Battle Exit Sequence------------
-if battle_exit == true &amp;&amp; battle_timer &gt; 2*room_speed
+if battle_exit == true 
 {
-    instance_destroy();
+    //Exit the fight
+    if battle_timer &gt; 2*room_speed &amp;&amp; key_select
+    {
+        instance_destroy();
+    }
+    
+    //Death animation
+    //- fade to alpha 0 after a second
+    if battle_timer &gt; 1*room_speed &amp;&amp; image_alpha &gt; 0
+    {
+        image_alpha -= 0.01;
+    }
+    
+    //- spawn annoying particles?
+    
+    //- gently spin
+    image_zForce = 2;
+    image_yForce += 0.1;
+    
+    //- ascend
+    enemy_idle_wave = approach(enemy_idle_wave,-360,0.01);
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="10">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///END THE BATTLE
+//NOTE: Replace reward values with more intelligent functions later.
+var reward_exp = enemy_level*10;
+var reward_gold = enemy_level*100;
+
+if enemy_hp &lt;= 0
+{
+    ds_list_destroy(possible_attacks);
+    action_finalized = noone;
+    enemy_hp = 0;
+    battle_exit = true;
+    battle_timer = 0;
+    battle_string += (enemy_name+" deafeted!#+"+string(reward_exp)+" EXP! +"+string(reward_gold)+" Gold!");
 }
 </string>
           </argument>
@@ -337,6 +412,11 @@ draw_set_font(global.fnt_normal);
 //Draw the background
 draw_background(bkg_battle_field,0,0);
 
+//Draw info textbox
+draw_set_colour(c_black);
+draw_rectangle(0,wind_height-40,wind_width,wind_height,false);
+draw_set_colour(c_white);
+
 //Draw action options
 if player_turn == true
 {
@@ -350,14 +430,17 @@ if player_turn == true
     if action_finalized == noone || action_finalized == 2
         { draw_sprite(spr_battle_option,2,3+68,wind_height-41-16); }
     
-    draw_sprite(spr_ui_battle_option_selector,0,3+16+(34*action_selected),wind_height-41-16-4);
+    //Draw selection pointers
+    if action_finalized == noone
+    {
+        draw_sprite(spr_ui_battle_option_selector,0,3+16+(34*action_selected),wind_height-41-16-4);
+    }
+    else if action_finalized == 0
+    {
+        draw_sprite(spr_ui_battle_option_selector,1,4,wind_height-34+(7*attack_action_selected))
+    }
+    
 }
-
-//Draw info textbox
-draw_set_colour(c_black);
-draw_rectangle(0,wind_height-40,wind_width,wind_height,false);
-
-draw_set_colour(c_white);
 
 //Draw info
 switch action_finalized
@@ -373,10 +456,13 @@ switch action_finalized
 }
 
 //Draw the enemy
-var _enemy_offset = enemy_idle_offset*sin(enemy_idle_wave);
+if image_alpha &gt; 0
+{
+    var _enemy_offset = enemy_idle_offset*sin(enemy_idle_wave);
 
-draw_sprite_ext(spr_battle_monster,enemy_id,wind_center_x,wind_center_y+_enemy_offset,1,image_yscale,image_angle,c_white,1);
-draw_text(wind_center_x-40,wind_center_y-64+_enemy_offset,enemy_name+" Lv. "+string(enemy_level)+"#HP: "+string(enemy_hp)+"/"+string(enemy_max_hp));
+    draw_sprite_ext(spr_battle_monster,enemy_id,wind_center_x,wind_center_y+_enemy_offset,1,image_yscale,image_angle,c_white,image_alpha);
+    draw_text(wind_center_x-40,wind_center_y-64+_enemy_offset,enemy_name+" Lv. "+string(enemy_level)+"#HP: "+string(enemy_hp)+"/"+string(enemy_max_hp));
+}
 </string>
           </argument>
         </arguments>
