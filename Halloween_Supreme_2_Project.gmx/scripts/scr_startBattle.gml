@@ -22,7 +22,7 @@ if !instance_exists(obj_battleControl)
     }
     
     
-    scr_musicTransition(scr_getMusic(_location),1);
+    scr_musicTransition(scr_getMusic(_location),2);
     
     //Who goes first? - For now, always the player.
     /*if _mob_data[1] > 1 //NOTE: Replace with player level!

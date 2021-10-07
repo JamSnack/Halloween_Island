@@ -5,6 +5,8 @@
   </Configs>
   <NewExtensions/>
   <sounds name="sound">
+    <sound>sound\snd_BeepBox_Song</sound>
+    <sound>sound\snd_generic_selection</sound>
     <sound>sound\snd_battle_theme</sound>
   </sounds>
   <sprites name="sprites">
@@ -48,6 +50,7 @@
       <script>scripts\scr_musicTransition.gml</script>
       <script>scripts\scr_startBattle.gml</script>
       <script>scripts\scr_fitText.gml</script>
+      <script>scripts\scr_playSound.gml</script>
     </scripts>
   </scripts>
   <objects name="objects">

@@ -243,6 +243,8 @@ if player_turn == true &amp;&amp; battle_exit == false
                 {
                     battle_timer = 0;
                     battle_exit = true;
+                    battle_string = "";
+                    action_finalized = noone;
                     battle_string += "You fled successfully!#"
                 }
                 else if (battle_exit == false)
@@ -322,7 +324,7 @@ if string_height(attack_string) &gt; battle_string_max_height
 if battle_exit == true 
 {
     //Exit the fight
-    if battle_timer &gt; 2*room_speed &amp;&amp; key_select
+    if battle_timer &gt; 4*room_speed
     {
         instance_destroy();
     }
@@ -342,6 +344,13 @@ if battle_exit == true
     
     //- ascend
     enemy_idle_wave = approach(enemy_idle_wave,-360,0.01);
+}
+
+
+//---------MANAGE SOUNDS------------
+if key_left || key_right || key_select || key_up || key_down
+{
+    scr_playSound(snd_generic_selection,false,2,0,0,1,false);
 }
 </string>
           </argument>
@@ -370,15 +379,19 @@ if battle_exit == true
 var reward_exp = enemy_level*10;
 var reward_gold = enemy_level*100;
 
+//Enemy defeated?
 if enemy_hp &lt;= 0
 {
-    ds_list_destroy(possible_attacks);
-    action_finalized = noone;
     enemy_hp = 0;
-    battle_exit = true;
-    battle_timer = 0;
+    battle_string = "";
     battle_string += (enemy_name+" deafeted!#+"+string(reward_exp)+" EXP! +"+string(reward_gold)+" Gold!");
 }
+
+//Battle exit stuff
+battle_exit = true;
+battle_timer = 0;
+action_finalized = noone;
+ds_list_destroy(possible_attacks);
 </string>
           </argument>
         </arguments>

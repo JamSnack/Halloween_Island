@@ -10,4 +10,4 @@ if audio_exists(global.music)
 //Start new music
 global.music = audio_play_sound(argument0,10,true);
 audio_sound_gain(global.music,0,0);
-audio_sound_gain(global.music,0,time); //NOTE: Temporarily disabled music by setting volume to 0~!
+audio_sound_gain(global.music,1,time); //NOTE: Temporarily disabled music by setting volume to 0~!
