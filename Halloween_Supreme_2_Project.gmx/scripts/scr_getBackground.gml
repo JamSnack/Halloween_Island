@@ -3,5 +3,5 @@
 
 switch argument0
 {
-    default: return bkg_battle_field;
+    default: return bkg_battle_field2;
 }

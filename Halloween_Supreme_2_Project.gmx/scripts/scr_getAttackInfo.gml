@@ -14,8 +14,8 @@ switch argument0
     case battle_attack.fireball:
     {
         info[0] = "Fireball"; //Name
-        info[1] = irandom_range(5,10); //Damage
-        info[2] = 25; //MP Cost
+        info[1] = irandom_range(50,100); //Damage
+        info[2] = 100; //MP Cost
     }
     break;
 }

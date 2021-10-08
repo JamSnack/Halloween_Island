@@ -53,7 +53,6 @@
   <instances>
     <instance objName="obj_battle_test" x="96" y="64" name="inst_CB3A8D34" locked="0" code="" scaleX="1" scaleY="1" colour="4294967295" rotation="0"/>
     <instance objName="obj_ant" x="96" y="96" name="inst_6A908F4C" locked="0" code="" scaleX="1" scaleY="1" colour="4294967295" rotation="0"/>
-    <instance objName="obj_init" x="0" y="0" name="inst_D67B61AD" locked="0" code="" scaleX="1" scaleY="1" colour="4294967295" rotation="0"/>
   </instances>
   <tiles/>
   <PhysicsWorld>0</PhysicsWorld>

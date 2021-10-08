@@ -45,6 +45,8 @@ enemy_hp = noone;
 enemy_max_hp = noone;
 image_zForce = 0; //The z and y force control how much force to apply to rotating the sprite in 3D space.
 image_yForce = 1; //Needs to be 1 when passed to image_yscale;
+hurt_flash = 0;
+death_explosion = false; //Whether or not the enemy death explosion has gone off.
 
 //GAME CONTROL VARIABLES
 player_turn = true; //True = player turn, false = enemy turn.
@@ -111,6 +113,15 @@ if battle_exit == false
     if image_yForce != 1 { image_yForce = approach(image_yForce, 1, image_yForce/10 ); }
 }
 
+//- hurt_flash
+if hurt_flash &gt; 0
+{
+    hurt_flash -= 0.1;
+    
+    if hurt_flash &lt; 0 then hurt_flash = 0;
+}
+
+//- rotation
 image_angle += image_zForce;
 image_yscale = sin(image_yForce);
 
@@ -218,8 +229,6 @@ if player_turn == true &amp;&amp; battle_exit == false
                 if key_select
                 {
                     scr_executeAttack(possible_attacks[| attack_action_selected]);
-                    player_turn = false;
-                    battle_timer = 0;
                 }
             }
             break;
@@ -266,6 +275,8 @@ else if battle_exit == false
         battle_string += ("You take "+string(enemy_level)+" damage.#");
         player_turn = true;
         action_finalized = noone;
+        scr_playSound(snd_player_hurt,false,3,0,0,1,true);
+        //Note: Screenshake will not work with draw GUI atm!
     }
 }
 
@@ -352,6 +363,20 @@ if key_left || key_right || key_select || key_up || key_down
 {
     scr_playSound(snd_generic_selection,false,2,0,0,1,false);
 }
+
+//-------DEATH ANIMATION PARTICLES----
+if image_alpha == 0 &amp;&amp; battle_exit == true &amp;&amp; death_explosion == false
+{
+    //These variables are used to allign the explosion with the Draw GUI event's draw_sprite_ext(spr_enemy) function   
+    var wind_width = 256*1.27;
+    var wind_height = 224*1.5;
+    var wind_center_x = wind_width/2;
+    var wind_center_y = wind_height/2;
+    var _enemy_offset = enemy_idle_offset*sin(enemy_idle_wave);
+    
+    //BAD
+    //instance_create(wind_center_x-40,wind_center_y-64+_enemy_offset,efct_death_explosion);
+}
 </string>
           </argument>
         </arguments>
@@ -384,7 +409,7 @@ if enemy_hp &lt;= 0
 {
     enemy_hp = 0;
     battle_string = "";
-    battle_string += (enemy_name+" deafeted!#+"+string(reward_exp)+" EXP! +"+string(reward_gold)+" Gold!");
+    battle_string += (enemy_name+" deafeted!#+"+string(reward_exp)+" EXP! +"+string(reward_gold)+" Candy!");
 }
 
 //Battle exit stuff
@@ -420,15 +445,44 @@ var wind_height = 224;
 var wind_center_x = wind_width/2;
 var wind_center_y = wind_height/2;
 
-draw_set_font(global.fnt_normal);
+draw_set_font(global.fnt_outlined);
 
 //Draw the background
-draw_background(bkg_battle_field,0,0);
+draw_background(background,0,0);
+
+//Draw the enemy
+if image_alpha &gt; 0
+{
+    var _enemy_offset = enemy_idle_offset*sin(enemy_idle_wave);
+    
+    //Draw name and level
+    draw_set_halign(fa_center);
+    draw_text(wind_center_x,wind_center_y-64+_enemy_offset,enemy_name+" Lv. "+string(enemy_level)+"##HP: "+string(enemy_hp)+"/"+string(enemy_max_hp));
+    draw_set_halign(fa_left);
+    
+    //Draw shadow
+    draw_sprite_ext(spr_battle_shadow,0,wind_center_x,wind_center_y+32,0.5+_enemy_offset/50,0.5+_enemy_offset/50,0,c_white,image_alpha+_enemy_offset/10);
+    
+    //Draw body
+    shader_set(shd_flash); 
+    draw_sprite_ext(spr_battle_monster,enemy_id,wind_center_x,wind_center_y+_enemy_offset,1,image_yscale,image_angle,c_white,1);
+    shader_reset();
+    draw_sprite_ext(spr_battle_monster,enemy_id,wind_center_x,wind_center_y+_enemy_offset,1,image_yscale,image_angle,image_blend,image_alpha-hurt_flash);
+}
+
+//- hp and mp
+var hp_str = ("HP: "+string(global.player_stats[STATS.hp])+"");
+var mp_str = ("MP: "+string(global.player_stats[STATS.mp])+"");
+
+draw_text(wind_width-10-string_width(hp_str),wind_height-60,hp_str);
+draw_text(wind_width-10-string_width(mp_str),wind_height-50,mp_str);
+
 
 //Draw info textbox
 draw_set_colour(c_black);
 draw_rectangle(0,wind_height-40,wind_width,wind_height,false);
 draw_set_colour(c_white);
+draw_set_font(global.fnt_normal);
 
 //Draw action options
 if player_turn == true
@@ -466,15 +520,6 @@ switch action_finalized
     
     //Covers case noone and case 2 (RUN)
     default: draw_text(5,wind_height-38,battle_string);
-}
-
-//Draw the enemy
-if image_alpha &gt; 0
-{
-    var _enemy_offset = enemy_idle_offset*sin(enemy_idle_wave);
-
-    draw_sprite_ext(spr_battle_monster,enemy_id,wind_center_x,wind_center_y+_enemy_offset,1,image_yscale,image_angle,c_white,image_alpha);
-    draw_text(wind_center_x-40,wind_center_y-64+_enemy_offset,enemy_name+" Lv. "+string(enemy_level)+"#HP: "+string(enemy_hp)+"/"+string(enemy_max_hp));
 }
 </string>
           </argument>

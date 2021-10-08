@@ -335,7 +335,7 @@ game_restart();
             <string>///TEMPORARY - BATTLE
 if !instance_exists(obj_battleControl)
 {
-    scr_startBattle(0,noone);
+    scr_startBattle(choose(0,1),noone);
 }
 else instance_destroy(obj_battleControl);
 </string>

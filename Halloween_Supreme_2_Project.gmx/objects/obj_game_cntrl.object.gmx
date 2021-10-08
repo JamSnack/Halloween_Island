@@ -29,6 +29,7 @@
 
 //Init font
 global.fnt_normal = font_add_sprite_ext(spr_fnt_ui,"!'#$%()*,-./0123456789:;&lt;=&gt;ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}.?+",0,0);
+global.fnt_outlined = font_add_sprite_ext(spr_fnt_ui_outlined,"!'#$%()*,-./0123456789:;&lt;=&gt;ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}.?+",0,0);
 
 //Init player
 enum STATS
@@ -55,6 +56,8 @@ global.player_stats[STATS.level] = 1; //Player level :)
 enum mobID
 {
     sphere_elite,
+    Apro,
+    
 }
 
 //Init actions
@@ -72,6 +75,64 @@ global.unlocked_attacks[battle_attack.fireball] = 1;
 
 //Music
 global.music = noone;
+
+//Particles
+global.part_system = part_system_create();
+part_system_automatic_draw(global.part_system,false);
+
+//Inventory
+global.inventory = ds_list_create();
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="3" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Death checking
+if global.player_stats[STATS.hp] &lt;= 0
+{
+    show_debug_message("The player is dead!");
+    game_restart(); //THIS SUCKS REPLACE WITH SOMETHING ELSE LATER!!!
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="64">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>part_system_drawit(global.part_system);
 </string>
           </argument>
         </arguments>

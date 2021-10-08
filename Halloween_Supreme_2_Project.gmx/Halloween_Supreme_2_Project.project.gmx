@@ -8,13 +8,17 @@
     <sound>sound\snd_BeepBox_Song</sound>
     <sound>sound\snd_generic_selection</sound>
     <sound>sound\snd_battle_theme</sound>
+    <sound>sound\snd_hurt</sound>
+    <sound>sound\snd_player_hurt</sound>
   </sounds>
   <sprites name="sprites">
     <sprites name="JamSnack's Sprites">
       <sprite>sprites\spr_battle_monster</sprite>
       <sprite>sprites\spr_ant</sprite>
       <sprite>sprites\spr_fnt_ui</sprite>
+      <sprite>sprites\spr_fnt_ui_outlined</sprite>
       <sprite>sprites\spr_battle_option</sprite>
+      <sprite>sprites\spr_battle_shadow</sprite>
     </sprites>
     <sprites name="Taska's Sprites">
       <sprite>sprites\spr_text</sprite>
@@ -25,6 +29,7 @@
   <backgrounds name="background">
     <backgrounds name="JamSnack's Backgrounds">
       <background>background\bkg_battle_field</background>
+      <background>background\bkg_battle_field2</background>
     </backgrounds>
     <backgrounds name="Taska's Backgrounds">
       <background>background\back_ocean</background>
@@ -53,17 +58,20 @@
       <script>scripts\scr_playSound.gml</script>
     </scripts>
   </scripts>
+  <shaders name="shaders">
+    <shader type="GLSLES">shaders\shd_flash.shader</shader>
+  </shaders>
   <objects name="objects">
     <objects name="Taska">
       <object>objects\obj_world_cntrl</object>
     </objects>
     <objects name="JamSnack">
       <object>objects\obj_battle_test</object>
-      <object>objects\obj_init</object>
       <object>objects\obj_ant</object>
       <object>objects\obj_battleControl</object>
       <object>objects\obj_game_cntrl</object>
     </objects>
+    <object>objects\efct_death_explosion</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\room_world</room>

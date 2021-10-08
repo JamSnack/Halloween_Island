@@ -4,7 +4,7 @@ var time = argument1;
 //Stop existing music
 if audio_exists(global.music)
 {
-    audio_sound_gain(global.music,0,time);
+    audio_stop_sound(global.music);
 }
 
 //Start new music
