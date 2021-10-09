@@ -80,8 +80,18 @@ global.music = noone;
 global.part_system = part_system_create();
 part_system_automatic_draw(global.part_system,false);
 
-//Inventory
-global.inventory = ds_list_create();
+//Inventory and ItemID
+init_inventory();
+
+scr_inven_add_item(itemID.sword,1);
+scr_inven_add_item(itemID.potion_hp,5);
+scr_inven_add_item(itemID.potion_mana,10);
+
+global.battle_items = array_create(2);
+global.battle_items[itemID.potion_hp] = 1;
+global.battle_items[itemID.potion_mana] = 1;
+
+
 </string>
           </argument>
         </arguments>
@@ -133,6 +143,19 @@ if global.player_stats[STATS.hp] &lt;= 0
           <argument>
             <kind>1</kind>
             <string>part_system_drawit(global.part_system);
+
+//TEMPORARY: Draw the inventory
+var drawn_items = 0;
+draw_set_font(global.fnt_outlined);
+
+for(_inv=0;_inv&lt;ds_list_size(global.inventory);_inv++)
+{    
+    if scr_inven_find_item(_inv) &gt; 0
+    {
+        draw_text(10,5+(drawn_items*15),scr_getItemInfo(_inv)+" x"+string(scr_inven_find_item(_inv)));
+        drawn_items+=1;
+    }
+}
 </string>
           </argument>
         </arguments>

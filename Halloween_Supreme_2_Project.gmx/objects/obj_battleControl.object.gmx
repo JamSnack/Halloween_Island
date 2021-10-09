@@ -58,10 +58,12 @@ attack_action_selected = 0; //Keeps track of the item action selected.
 action_finalized = noone; //Keeps track of the selected action_selected. Noone if not in use.
 battle_string = ""; //The text that is show during battle.
 attack_string = ""; //The text that lists the player's attack in battle.
+item_string = "";
 battle_string_max_length = 190; //The maximum length of the battle string.
 battle_string_max_height = 40; //The maximum height of the battle stirng.
 battle_exit = false; //Whether or not to run the battle exit sequence.
 possible_attacks = ds_list_create(); //Container for attacks to be available during battle. Destroyed in user_event0
+possible_items = ds_list_create();
 </string>
           </argument>
         </arguments>
@@ -188,6 +190,7 @@ if player_turn == true &amp;&amp; battle_exit == false
         if key_cancel
         {
             attack_string = "";
+            item_string = "";
             action_finalized = noone;
         }
         
@@ -242,6 +245,30 @@ if player_turn == true &amp;&amp; battle_exit == false
                 else if key_down &amp;&amp; item_action_selected &lt; 1 //NOTE: Replace with number of options in the future
                 {
                     item_action_selected += 1;
+                }
+
+                //Construct the item string and list the possible items
+                if item_string == ""
+                {
+                    for(str_index=0;str_index&lt;array_length_1d(global.battle_items);str_index++)
+                    {
+                        var _item = global.battle_items[str_index];
+                        
+                        if _item == 1 &amp;&amp; global.inventory[| str_index] &gt; 0
+                        {
+                            var _name = scr_getItemInfo(str_index);
+                            item_string += (_name+" x"+string(scr_inven_find_item(str_index))+"#");
+                            
+                            //add to our list of possible items
+                            ds_list_add(possible_items,str_index);
+                        }
+                    }
+                }
+                
+                //Select an option and execute that attack!
+                if key_select
+                {
+                    scr_executeItem(possible_items[| item_action_selected]);
                 }
             }
             break;
@@ -307,7 +334,7 @@ if string_height(battle_string) &gt; battle_string_max_height
 }
 
 
-//-----FORMAT ATTACK TEXT------
+//-----FORMAT TEXT------
 //Note: using battle_string_max_length and other variables are fine here. Same textbox :P
 if string_width(attack_string) &gt; battle_string_max_length
 {
@@ -329,6 +356,29 @@ if string_height(attack_string) &gt; battle_string_max_height
     }
     
     attack_string = string_delete(attack_string,1,string_length(new_str));
+}
+
+
+if string_width(attack_string) &gt; battle_string_max_length
+{
+    attack_string = scr_fitText(attack_string,battle_string_max_length);
+}
+
+if string_height(item_string) &gt; battle_string_max_height
+{
+    //We should remove text. Let's delete the first-most message.
+    var new_str = "";
+    
+    for(_i=1;_i&lt;string_length(item_string);_i++)
+    {
+        var char = string_char_at(item_string,_i);
+        new_str += char;
+        
+        if char == "#" 
+            { show_debug_message(new_str); break; }
+    }
+    
+    item_string = string_delete(item_string,1,string_length(new_str));
 }
 
 //-------Battle Exit Sequence------------
@@ -359,7 +409,7 @@ if battle_exit == true
 
 
 //---------MANAGE SOUNDS------------
-if key_left || key_right || key_select || key_up || key_down
+if key_left || key_right || key_select || key_up || key_down || key_cancel
 {
     scr_playSound(snd_generic_selection,false,2,0,0,1,false);
 }
@@ -506,6 +556,10 @@ if player_turn == true
     {
         draw_sprite(spr_ui_battle_option_selector,1,4,wind_height-34+(7*attack_action_selected))
     }
+    else if action_finalized == 1
+    {
+        draw_sprite(spr_ui_battle_option_selector,1,4,wind_height-34+(7*item_action_selected))
+    }
     
 }
 
@@ -514,7 +568,13 @@ switch action_finalized
 {
     case 0:
     {
-        draw_text(5,wind_height-38,attack_string);   
+        draw_text(5,wind_height-38,attack_string);
+    }
+    break;
+    
+    case 1:
+    {
+        draw_text(5,wind_height-38,item_string);
     }
     break;
     

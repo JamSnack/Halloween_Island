@@ -51,12 +51,18 @@
       <script>scripts\scr_getEnemyInfo.gml</script>
       <script>scripts\scr_getAttackInfo.gml</script>
       <script>scripts\scr_executeAttack.gml</script>
+      <script>scripts\scr_executeItem.gml</script>
       <script>scripts\scr_getBackground.gml</script>
       <script>scripts\scr_musicTransition.gml</script>
       <script>scripts\scr_startBattle.gml</script>
       <script>scripts\scr_fitText.gml</script>
       <script>scripts\scr_playSound.gml</script>
     </scripts>
+    <script>scripts\scr_inven_find_item.gml</script>
+    <script>scripts\scr_inven_add_item.gml</script>
+    <script>scripts\scr_getItemInfo.gml</script>
+    <script>scripts\init_inventory.gml</script>
+    <script>scripts\scr_inven_battle_init.gml</script>
   </scripts>
   <shaders name="shaders">
     <shader type="GLSLES">shaders\shd_flash.shader</shader>
@@ -70,8 +76,8 @@
       <object>objects\obj_ant</object>
       <object>objects\obj_battleControl</object>
       <object>objects\obj_game_cntrl</object>
+      <object>objects\efct_death_explosion</object>
     </objects>
-    <object>objects\efct_death_explosion</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\room_world</room>
