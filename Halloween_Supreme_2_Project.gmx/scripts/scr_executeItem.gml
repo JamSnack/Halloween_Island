@@ -5,8 +5,8 @@ var item_message = ""; //A container for whatever zaney shit appears in the text
 
 switch argument0
 {
-    case itemID.potion_hp: { global.player_stats[STATS.hp] = approach(global.player_stats[STATS.hp],global.player_stats[STATS.maxHp],25); item_message = "You heal 25 HP!";} break;
-    case itemID.potion_mana: { global.player_stats[STATS.mp] = approach(global.player_stats[STATS.mp],global.player_stats[STATS.maxMp],30); item_message = "You recover 30 MP!"; } break;
+    case itemID.potion_hp: { global.player_stats[STATS.hp] = approach(global.player_stats[STATS.hp],global.player_stats[STATS.maxHp],25); item_message = "You heal 25 HP!#";} break;
+    case itemID.potion_mana: { global.player_stats[STATS.mp] = approach(global.player_stats[STATS.mp],global.player_stats[STATS.maxMp],30); item_message = "You recover 30 MP!#"; } break;
 }
 
 //assume the item is used successfully if item_message != "";

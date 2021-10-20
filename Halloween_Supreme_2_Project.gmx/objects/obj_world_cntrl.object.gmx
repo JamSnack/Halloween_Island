@@ -25,8 +25,8 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Proceeds with overworld generation.
-
+            <string>/// REMOVED Proceeds with overworld generation.
+/*
 scr_world_gen();
 
 if (gen_state &lt; 5)
