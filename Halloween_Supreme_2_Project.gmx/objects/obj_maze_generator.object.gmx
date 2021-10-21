@@ -40,8 +40,8 @@ untouched cells, to avoid creating circular loops in the maze.
 
 randomize();
 
-//Grid height and width are 0 indexed. This 10x10 maze's last column is 9.
-maze_size = 24;
+//RULES: maze_size must be an odd number.
+maze_size = 25;
 tile_size = 32;
 path_length = 2;
 maze_grid = ds_grid_create(maze_size,maze_size);
@@ -331,6 +331,87 @@ for(_i=0;_i&lt;hole_size*hole_size;_i++)
     ds_grid_set(maze_grid,starting_x+_i-(column*hole_size),starting_y+column,0);   
 }
 
+//Generate key locations or puzzles
+// - Generate exit
+var horizontal_exit = choose(true,false);
+
+show_debug_message("Exit on top or bottom: "+string(horizontal_exit));
+if horizontal_exit = true
+{
+    var _y = choose(0,maze_size-1);
+    var _x = irandom(maze_size);
+    
+    ds_grid_set(maze_grid,_x,_y,0);
+    instance_create(_x*tile_size,_y*tile_size,obj_door);
+    
+    //if the exit is at the bottom of the map, build up
+    if _y &gt; maze_size/2
+    {
+        for(_i=1;_i&lt;maze_size;_i++)
+        {
+            if ds_grid_get(maze_grid,_x,_y-_i) == 0 then break;
+            ds_grid_set(maze_grid,_x,_y-_i,0);
+        }
+    }
+    else
+    {
+        for(_i=1;_i&lt;maze_size;_i++)
+        {
+            if ds_grid_get(maze_grid,_x,_y+_i) == 0 then break;
+            ds_grid_set(maze_grid,_x,_y+_i,0);
+        }
+    }
+}
+else
+{
+    var _y = irandom(maze_size);
+    var _x = choose(0,maze_size-1);
+    
+    ds_grid_set(maze_grid,_x,_y,0);
+    instance_create(_x*tile_size,_y*tile_size,obj_door);
+    
+    //if the exit is at the right of the map, build left
+    if _x &gt; maze_size/2
+    {
+        for(_i=1;_i&lt;maze_size;_i++)
+        {
+            if ds_grid_get(maze_grid,_x-_i,_y) == 0 then break;
+            ds_grid_set(maze_grid,_x-_i,_y,0);
+        }
+    }
+    else
+    {
+        for(_i=1;_i&lt;maze_size;_i++)
+        {
+            if ds_grid_get(maze_grid,_x+_i,_y) == 0 then break;
+            ds_grid_set(maze_grid,_x+_i,_y,0);
+        }
+    }
+}
+
+//Place keys
+var key_amt = 1;
+var key_columns = irandom_range(0,maze_size);
+
+for(i=0;i&lt;maze_size;i++)
+{
+    for(f=0;f&lt;maze_size;f++)
+    {
+        if ds_grid_get(maze_grid,f,i) == 0
+        {
+            if maze_check_dead_end(maze_grid,f,i,1)
+            {
+                instance_create(f*tile_size,i*tile_size,obj_key);
+                key_amt -= 1;
+                
+                if key_amt &lt;= 0 then break;
+            }
+        }
+    }
+    
+    if key_amt &lt;= 0 then break;
+}
+
 //Convert to objects
 for(i=0;i&lt;maze_size;i++)
 {
@@ -338,11 +419,11 @@ for(i=0;i&lt;maze_size;i++)
     {
         if ds_grid_get(maze_grid,f,i) == 1
         {
-            instance_create(10+tile_size*f,10+tile_size*i,obj_wall);
+            instance_create(tile_size*f,tile_size*i,obj_wall);
         }
         else if ds_grid_get(maze_grid,f,i) == 0 
         { 
-            instance_create(10+tile_size*f,10+tile_size*i,obj_road);
+            instance_create(tile_size*f,tile_size*i,obj_road);
         }
     }
 }
@@ -373,22 +454,18 @@ instance_create(starting_x*tile_size+tile_size*2,starting_y*tile_size+tile_size,
           <argument>
             <kind>1</kind>
             <string>///Draw the generation process
-var xx = 10;
-var yy = 10;
-
-
 for(i=0;i&lt;maze_size;i++)
 {
     for(f=0;f&lt;maze_size;f++)
     {
         if ds_grid_get(maze_grid,f,i) == 1
         {
-            draw_sprite(spr_tile_small,0,xx+f*tile_size,yy+i*tile_size);
+            draw_sprite(spr_tile_small,0,f*tile_size,i*tile_size);
         }
     }
 }
 
-draw_sprite(spr_tile_small,1,xx+carver_x*tile_size,yy+carver_y*tile_size);
+draw_sprite(spr_tile_small,1,carver_x*tile_size,carver_y*tile_size);
 </string>
           </argument>
         </arguments>

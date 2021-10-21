@@ -142,10 +142,10 @@ if global.player_stats[STATS.hp] &lt;= 0
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>part_system_drawit(global.part_system);
+            <string>//part_system_drawit(global.part_system);
 
 //TEMPORARY: Draw the inventory
-var drawn_items = 0;
+/*var drawn_items = 0;
 draw_set_font(global.fnt_outlined);
 
 for(_inv=0;_inv&lt;ds_list_size(global.inventory);_inv++)
