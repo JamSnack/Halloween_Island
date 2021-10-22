@@ -28,6 +28,7 @@
     <sprite>sprites\spr_cedrick</sprite>
     <sprite>sprites\spr_door</sprite>
     <sprite>sprites\spr_key</sprite>
+    <sprite>sprites\spr_sphere</sprite>
   </sprites>
   <backgrounds name="background">
     <backgrounds name="JamSnack's Backgrounds">
@@ -68,6 +69,9 @@
     <script>scripts\scr_inven_battle_init.gml</script>
     <script>scripts\maze_grid_update.gml</script>
     <script>scripts\maze_check_dead_end.gml</script>
+    <script>scripts\scr_spawn_monster_random.gml</script>
+    <script>scripts\scr_spawn_monster.gml</script>
+    <script>scripts\scr_pause_game.gml</script>
   </scripts>
   <shaders name="shaders">
     <shader type="GLSLES">shaders\shd_flash.shader</shader>
@@ -91,6 +95,8 @@
     <object>objects\obj_door</object>
     <object>objects\obj_key</object>
     <object>objects\obj_monster</object>
+    <object>objects\efct_spawn_beam</object>
+    <object>objects\OVERWORLD_PAUSE</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\room_world</room>

@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>0</depth>
+  <depth>-2</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -25,12 +25,15 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string></string>
+            <string>size = 1;
+time = 0;
+flick_offset = 0;
+</string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="6" enumb="56">
+    <event eventtype="3" enumb="0">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -47,11 +50,43 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if !instance_exists(obj_battleControl)
+            <string>size = approach(size,0,(time div 2)*0.1);
+
+//Flicker
+if (time mod 2) == 0
 {
-    scr_startBattle(0,noone,noone);
-}
-else instance_destroy(obj_battleControl);
+    flick_offset = 0;
+} else flick_offset = random_range(-1,1)*0.01;
+
+//Timer
+time++;
+
+if size == 0 then instance_destroy();
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>var area = 8;
+draw_set_color(c_white);
+draw_rectangle(x-area*(size+flick_offset),y-view_hview,x+area*(size+flick_offset),y+4,false);
 </string>
           </argument>
         </arguments>

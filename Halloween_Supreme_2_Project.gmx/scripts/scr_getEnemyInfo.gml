@@ -11,6 +11,14 @@ switch argument0
     }
     break;
     
+    case mobID.corn_coblin:
+    {
+        info[0] = "Corn-Coblin";
+        info[1] = 1;
+        info[2] = 10;
+    }
+    break;
+    
     default:
     {
         info[0] = "Sphere Elite"; //Name

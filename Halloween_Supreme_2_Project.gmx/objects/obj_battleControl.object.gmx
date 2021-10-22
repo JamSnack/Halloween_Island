@@ -64,6 +64,7 @@ battle_string_max_height = 40; //The maximum height of the battle stirng.
 battle_exit = false; //Whether or not to run the battle exit sequence.
 possible_attacks = ds_list_create(); //Container for attacks to be available during battle. Destroyed in user_event0
 possible_items = ds_list_create();
+init_instance = 0; //The instance that started the battle. If we kill the enemy then we need to destroy the encounter!
 </string>
           </argument>
         </arguments>
@@ -282,6 +283,11 @@ if player_turn == true &amp;&amp; battle_exit == false
                     battle_string = "";
                     action_finalized = noone;
                     battle_string += "You fled successfully!#"
+                    
+                    if instance_exists(init_instance)
+                    {
+                        init_instance.flee_timer = 60; //Disable fled enemies
+                    }
                 }
                 else if (battle_exit == false)
                 {
@@ -457,6 +463,11 @@ var reward_gold = enemy_level*100;
 //Enemy defeated?
 if enemy_hp &lt;= 0
 {
+    if instance_exists(init_instance) 
+    { 
+        with init_instance { instance_destroy(); }
+    }
+    
     enemy_hp = 0;
     battle_string = "";
     battle_string += (enemy_name+" deafeted!#+"+string(reward_exp)+" EXP! +"+string(reward_gold)+" Candy!");

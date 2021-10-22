@@ -4,7 +4,7 @@
   <solid>0</solid>
   <visible>-1</visible>
   <depth>0</depth>
-  <persistent>0</persistent>
+  <persistent>-1</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
   <events>
@@ -97,6 +97,37 @@ view_hview = ((maze_size)*8)/zoom;;
 
 camera.x = floor(maze_size/2)*tile_size;
 camera.y = floor(maze_size/2)*tile_size;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="1" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///GAME_STATE = GAMEPLAY and other
+
+mp_grid_destroy(mp_maze_grid);
+mp_maze_grid = mp_grid_create(0,0,maze_size,maze_size,tile_size,tile_size);
+mp_grid_add_instances(mp_maze_grid,obj_wall,false);
+
+ds_grid_destroy(maze_grid);
+instance_create(starting_x*tile_size+tile_size*2,starting_y*tile_size+tile_size,obj_player);
+game_state = "GAMEPLAY";
 </string>
           </argument>
         </arguments>
@@ -390,8 +421,8 @@ else
 }
 
 //Place keys
-var key_amt = 1;
-var key_columns = irandom_range(0,maze_size);
+var key_amt = 1; //NOTE: Must not exceed potential dead ends! Should be impossible under normal circumstances.
+var dead_end_list = ds_list_create();
 
 for(i=0;i&lt;maze_size;i++)
 {
@@ -401,15 +432,22 @@ for(i=0;i&lt;maze_size;i++)
         {
             if maze_check_dead_end(maze_grid,f,i,1)
             {
-                instance_create(f*tile_size,i*tile_size,obj_key);
-                key_amt -= 1;
-                
-                if key_amt &lt;= 0 then break;
+                var point = array_create(2);
+                point[0] = f;
+                point[1] = i;
+                ds_list_add(dead_end_list,point);
             }
         }
     }
+}
+
+//- Pick a random location from our potential locations to spawn a key.
+while(key_amt &gt; 0)
+{
+    var selected_point = ds_list_find_value(dead_end_list,irandom(ds_list_size(dead_end_list)));
+    instance_create(selected_point[0]*tile_size,selected_point[1]*tile_size,obj_key);
     
-    if key_amt &lt;= 0 then break;
+    key_amt -= 1;
 }
 
 //Convert to objects
@@ -428,9 +466,13 @@ for(i=0;i&lt;maze_size;i++)
     }
 }
 
+//Pass the completed maze_grid to the game.
+ds_grid_destroy(current_maze);
+current_maze = ds_grid_create(maze_size,maze_size);
+ds_grid_copy(current_maze,maze_grid);
 
 //Create player
-instance_create(starting_x*tile_size+tile_size*2,starting_y*tile_size+tile_size,obj_player);
+//instance_create(starting_x*tile_size+tile_size*2,starting_y*tile_size+tile_size,obj_player);
 </string>
           </argument>
         </arguments>

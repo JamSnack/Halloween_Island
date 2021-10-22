@@ -57,7 +57,7 @@ enum mobID
 {
     sphere_elite,
     Apro,
-    
+    corn_coblin,
 }
 
 //Init actions
@@ -92,6 +92,20 @@ global.battle_items[itemID.potion_hp] = 1;
 global.battle_items[itemID.potion_mana] = 1;
 
 
+//GLOBALVAR
+globalvar game_state,difficulty,game_time,current_maze,paused,mp_maze_grid;
+game_state = "MAZE_GENERATE";
+difficulty = 0;
+game_time = 0;
+current_maze = ds_grid_create(0,0);
+mp_maze_grid = mp_grid_create(0,0,0,0,32,32);
+pause = false;
+
+//Locals
+game_time_ms = 0; //These game_time_# variables are used when drawing the timer.
+game_time_s = 0;
+game_time_m = 0;
+game_time_h = 0;
 </string>
           </argument>
         </arguments>
@@ -114,12 +128,56 @@ global.battle_items[itemID.potion_mana] = 1;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Death checking
+            <string>///DEATH AND GAME STATE
 if global.player_stats[STATS.hp] &lt;= 0
 {
     show_debug_message("The player is dead!");
     game_restart(); //THIS SUCKS REPLACE WITH SOMETHING ELSE LATER!!!
 }
+
+//-------GAME STATE---------
+switch game_state
+{
+    case "GAMEPLAY":
+    {
+        //Spawn creatures inside the maze
+        if instance_number(obj_monster) &lt; 5
+        {
+            scr_spawn_monster_random(mobID.sphere_elite,1);
+        }
+        
+        //Update game-time during gameplay
+        game_time++;
+        game_time_ms++;
+        if (game_time_ms != 0 &amp;&amp; game_time_ms mod 60 == 0) { game_time_ms = 0; game_time_s += 1; } //Seconds
+        if (game_time_s != 0 &amp;&amp; game_time_s mod 60 == 0) { game_time_s = 0; game_time_m += 1; } //Minutes
+        if (game_time_m != 0 &amp;&amp; game_time_m mod 60 == 0) { game_time_m = 0; game_time_h += 1; } //Hours
+    }
+    break;
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="6" enumb="56">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>scr_spawn_monster(mobID.sphere_elite,mouse_x,mouse_y);
 </string>
           </argument>
         </arguments>
@@ -142,7 +200,13 @@ if global.player_stats[STATS.hp] &lt;= 0
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//part_system_drawit(global.part_system);
+            <string>///Draw UI and other elements.
+
+
+//Draw game timer
+draw_set_font(global.fnt_outlined);
+draw_set_color(c_white);
+draw_text(10,10,string(game_time_h)+":"+string(game_time_m)+":"+string(game_time_s)+"."+string(game_time_ms));
 
 //TEMPORARY: Draw the inventory
 /*var drawn_items = 0;

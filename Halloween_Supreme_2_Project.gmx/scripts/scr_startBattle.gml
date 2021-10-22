@@ -1,6 +1,7 @@
-///scr_startBattle(mobID, location);
+///scr_startBattle(mobID, location, init_instance);
 var _mob = argument0;
 var _location = argument1;
+var init_instance = argument2;
 
 var _mob_data = scr_getEnemyInfo(_mob);
 
@@ -15,6 +16,7 @@ if !instance_exists(obj_battleControl)
     _bat.enemy_level = _mob_data[1];
     _bat.enemy_max_hp = _mob_data[2];
     _bat.enemy_hp = _mob_data[2];
+    _bat.init_instance = init_instance;
     
     with _bat
     {
