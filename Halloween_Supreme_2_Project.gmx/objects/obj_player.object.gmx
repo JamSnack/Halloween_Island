@@ -30,6 +30,8 @@
 mask_index = spr_cedrick;
 
 instance_create(x,y+8,efct_spawn_beam);
+
+scr_overMessage("Find the keys and escape the maze!",0,3,c_orange);
 </string>
           </argument>
         </arguments>
@@ -52,29 +54,69 @@ instance_create(x,y+8,efct_spawn_beam);
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>key_right = keyboard_check(ord('D')) || keyboard_check(vk_right);
-key_left = keyboard_check(ord('A')) || keyboard_check(vk_left);
-key_up = keyboard_check(ord('W')) || keyboard_check(vk_up);
-key_down = keyboard_check(ord('S')) || keyboard_check(vk_down);
-
-var h_move = key_right-key_left;
-
-if !instance_exists(obj_battleControl) //Disable movement during battle sequence
+            <string>if game_state == "INTERM" 
 {
-    if !collision_rectangle(bbox_left+h_move*walkspeed,bbox_top,bbox_right+h_move*walkspeed,bbox_bottom,obj_wall,false,true)
+    //Beam 'em up!
+    if visible = true
     {
-        x += h_move*walkspeed;
-        if h_move != 0 then image_xscale = h_move;
+        instance_create(x,y,efct_spawn_beam);
     }
     
+    visible = false;
+}
+else
+{
+    visible = true;
     
-    var v_move = key_down-key_up;
+        
+    //-----Movement----------
+    key_right = keyboard_check(ord('D')) || keyboard_check(vk_right);
+    key_left = keyboard_check(ord('A')) || keyboard_check(vk_left);
+    key_up = keyboard_check(ord('W')) || keyboard_check(vk_up);
+    key_down = keyboard_check(ord('S')) || keyboard_check(vk_down);
     
-    if !collision_rectangle(bbox_left,bbox_top+v_move*walkspeed,bbox_right,bbox_bottom+v_move*walkspeed,obj_wall,false,true)
+    var h_move = key_right-key_left;
+    
+    if !instance_exists(obj_battleControl) //Disable movement during battle sequence
     {
-        y += v_move*walkspeed;
+        if !collision_rectangle(bbox_left+h_move*walkspeed,bbox_top,bbox_right+h_move*walkspeed,bbox_bottom,obj_wall,false,true)
+        {
+            x += h_move*walkspeed;
+            if h_move != 0 then image_xscale = h_move;
+        }
+        
+        
+        var v_move = key_down-key_up;
+        
+        if !collision_rectangle(bbox_left,bbox_top+v_move*walkspeed,bbox_right,bbox_bottom+v_move*walkspeed,obj_wall,false,true)
+        {
+            y += v_move*walkspeed;
+        }
+    }
+    
+    //UNLOCK THE DOOR IF WE CAN!
+    if instance_exists(obj_door) &amp;&amp; distance_to_object(obj_door) &lt; 8 &amp;&amp; obj_door.unlocked == true
+    {
+        with obj_door
+        {
+            //Enable intermission mode
+            instance_destroy();
+            game_state = "INTERM";
+            
+            //Cleanup monsters!
+            if instance_exists(obj_monster)
+            {
+                with obj_monster
+                {
+                    instance_destroy();
+                } 
+            }
+            
+            //Will the witch say something corny here?
+        }
     }
 }
+
 </string>
           </argument>
         </arguments>

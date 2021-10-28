@@ -3,19 +3,59 @@ var info = array_create(3);
 
 switch argument0
 {
-    case battle_attack.slash:
+    case battle_attack.pinch:
     {
-        info[0] = "Slash"; //Name
-        info[1] = choose(1,2,3); //Damage
+        info[0] = "Pinch"; //Name
+        info[1] = irandom_range(1,3); //Damage
         info[2] = 0; //MP Cost
     }
     break;
     
-    case battle_attack.fireball:
+    case battle_attack.magic_pinch:
     {
-        info[0] = "Fireball"; //Name
-        info[1] = irandom_range(50,100); //Damage
-        info[2] = 100; //MP Cost
+        info[0] = "Magic Pinch"; //Name
+        info[1] = irandom_range(10,25); //Damage
+        info[2] = 25; //MP Cost
+    }
+    break;
+    
+    case battle_attack.slap:
+    {
+        info[0] = "Slap"; //Name
+        info[1] = irandom_range(5,9); //Damage
+        info[2] = 0; //MP Cost
+    }
+    break;
+    
+    case battle_attack.smash:
+    {
+        info[0] = "Smash"; //Name
+        info[1] = irandom_range(8,15); //Damage
+        info[2] = 0; //MP Cost
+    }
+    break;
+    
+    case battle_attack.destroy:
+    {
+        info[0] = "Destroy"; //Name
+        info[1] = irandom_range(10,25); //Damage
+        info[2] = 0; //MP Cost
+    }
+    break;
+    
+    case battle_attack.obliterate:
+    {
+        info[0] = "Destroy"; //Name
+        info[1] = irandom_range(15,40); //Damage
+        info[2] = 0; //MP Cost
+    }
+    break;
+    
+    case battle_attack.remove_flesh:
+    {
+        info[0] = "Remove Flesh"; //Name
+        info[1] = irandom_range(25,45); //Damage
+        info[2] = 0; //MP Cost
     }
     break;
 }

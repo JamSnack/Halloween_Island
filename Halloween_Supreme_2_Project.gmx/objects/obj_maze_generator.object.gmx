@@ -41,7 +41,7 @@ untouched cells, to avoid creating circular loops in the maze.
 randomize();
 
 //RULES: maze_size must be an odd number.
-maze_size = 25;
+maze_size = min(11+maze_difficulty*2,75);
 tile_size = 32;
 path_length = 2;
 maze_grid = ds_grid_create(maze_size,maze_size);
@@ -63,7 +63,8 @@ backstep = false; //Whether or not to enable to backstepping routine.
 directions_checked = ds_list_create(); //A list containing the checked directions of the carver during generation.
 visited_cells_x = ds_list_create();
 visited_cells_y = ds_list_create();
-maze_complete = false;
+maze_complete = false; //Whether or not the wall carving step has been completed.
+maze_conditions_passed = false; //Whether or not the maze generated correctly as to satisfy specific conditions.
 
 directions_x = ds_map_create();
 ds_map_add(directions_x,"N",0);
@@ -90,13 +91,13 @@ view_yview -= 32;
 
 //Zoom out over the maze!
 //Initial zoom
-var zoom = 0.1;
-
-view_wview = ((maze_size)*8)/zoom;
-view_hview = ((maze_size)*8)/zoom;;
-
-camera.x = floor(maze_size/2)*tile_size;
-camera.y = floor(maze_size/2)*tile_size;
+camera.zoom = 0.2;
+//camera.x_zoom = ((maze_size)*8)/zoom;
+//camera.y_zoom = ((maze_size)*8)/zoom;
+//camera.x = floor(maze_size/2)*tile_size;
+//camera.y = floor(maze_size/2)*tile_size;
+camera.follow_this = 'MAZE';
+camera.zoom_speed = 8;
 </string>
           </argument>
         </arguments>
@@ -122,12 +123,30 @@ camera.y = floor(maze_size/2)*tile_size;
             <string>///GAME_STATE = GAMEPLAY and other
 
 mp_grid_destroy(mp_maze_grid);
+
+if maze_conditions_passed == false
+{
+    instance_create(0,0,obj_maze_generator);
+    show_debug_message("MAZE FAILED. NEW MAZE.");
+    event_user(1); //Clear the generated objects
+    exit;
+}
+
 mp_maze_grid = mp_grid_create(0,0,maze_size,maze_size,tile_size,tile_size);
 mp_grid_add_instances(mp_maze_grid,obj_wall,false);
 
 ds_grid_destroy(maze_grid);
-instance_create(starting_x*tile_size+tile_size*2,starting_y*tile_size+tile_size,obj_player);
+if !instance_exists(obj_player) then instance_create(starting_x*tile_size+tile_size*2,starting_y*tile_size+tile_size,obj_player);
+else
+{
+    obj_player.x = starting_x*tile_size+tile_size*2;
+    obj_player.y = starting_y*tile_size+tile_size;
+    
+    instance_create(starting_x*tile_size+tile_size*2,starting_y*tile_size+tile_size,efct_spawn_beam);
+}
+
 game_state = "GAMEPLAY";
+camera.follow_this = obj_player;
 </string>
           </argument>
         </arguments>
@@ -154,7 +173,6 @@ game_state = "GAMEPLAY";
 //if (time mod time_framerate == 0) then exit;
 
 //NOTE: When checking for grid coordinates, an invalid coordinate will also return 0.
-
 if maze_complete == false
 {
     //Select a random direction
@@ -193,7 +211,7 @@ if maze_complete == false
     {
         maze_grid_update(move_to,path_length);
         backstep = false;
-        scr_playSound(snd_generic_selection,false,2,0,0,0.5,true);
+        scr_playSound(snd_generic_selection,false,2,-1,-1,0.5,true);
     }
     
     //BACKSTEP
@@ -217,21 +235,12 @@ if maze_complete == false
 else
 {    
     //Zoom into the maze
-    var zoom = 1;
-    var zoom_speed = 3;
+    camera.zoom = 1;
+    camera.zoom_speed = 3;
     //- set zoom targets
-    var x_zoom = 256/zoom;
-    var y_zoom = 256/zoom;
-    
-    if (view_wview != x_zoom) || (view_hview != y_zoom)
-    {
-        view_wview = approach(view_wview,x_zoom,(zoom_speed*view_wview/x_zoom)*zoom_speed);
-        view_hview = approach(view_hview,y_zoom,(zoom_speed*view_hview/y_zoom)*zoom_speed);
-    }
-    else
-    {
-        instance_destroy();
-    }
+    camera.x_zoom = 256/camera.zoom;
+    camera.y_zoom = 256/camera.zoom;
+    instance_destroy();
 }
 </string>
           </argument>
@@ -330,6 +339,48 @@ else
         </arguments>
       </action>
     </event>
+    <event eventtype="7" enumb="11">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///CLEAR THE MAZE OBJECTS
+if instance_exists(obj_wall)
+{
+    with obj_wall instance_destroy();
+}
+
+if instance_exists(obj_road)
+{
+    with obj_road instance_destroy();
+}
+
+if instance_exists(obj_door)
+{
+    with obj_door instance_destroy();
+}
+
+if instance_exists(obj_key)
+{
+    with obj_key instance_destroy();
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="7" enumb="10">
       <action>
         <libid>1</libid>
@@ -370,7 +421,7 @@ show_debug_message("Exit on top or bottom: "+string(horizontal_exit));
 if horizontal_exit = true
 {
     var _y = choose(0,maze_size-1);
-    var _x = irandom(maze_size);
+    var _x = irandom_range(1,maze_size-2);
     
     ds_grid_set(maze_grid,_x,_y,0);
     instance_create(_x*tile_size,_y*tile_size,obj_door);
@@ -395,7 +446,7 @@ if horizontal_exit = true
 }
 else
 {
-    var _y = irandom(maze_size);
+    var _y = irandom_range(1,maze_size-2);
     var _x = choose(0,maze_size-1);
     
     ds_grid_set(maze_grid,_x,_y,0);
@@ -421,7 +472,7 @@ else
 }
 
 //Place keys
-var key_amt = 1; //NOTE: Must not exceed potential dead ends! Should be impossible under normal circumstances.
+var key_amt = 1 + difficulty div 10; //NOTE: Must not exceed potential dead ends! Should be impossible under normal circumstances.
 var dead_end_list = ds_list_create();
 
 for(i=0;i&lt;maze_size;i++)
@@ -444,7 +495,7 @@ for(i=0;i&lt;maze_size;i++)
 //- Pick a random location from our potential locations to spawn a key.
 while(key_amt &gt; 0)
 {
-    var selected_point = ds_list_find_value(dead_end_list,irandom(ds_list_size(dead_end_list)));
+    var selected_point = ds_list_find_value(dead_end_list,irandom(ds_list_size(dead_end_list)-1));
     instance_create(selected_point[0]*tile_size,selected_point[1]*tile_size,obj_key);
     
     key_amt -= 1;
@@ -466,10 +517,23 @@ for(i=0;i&lt;maze_size;i++)
     }
 }
 
+//- if more than 65% of the walls remain, regenerate the maze.
+var maze_ratio = instance_number(obj_wall)/(maze_size*maze_size);
+show_debug_message("Maze Ratio: "+string(maze_ratio));
+
+if maze_ratio &gt; 0.65
+{
+    instance_destroy();
+    exit;
+}
+
 //Pass the completed maze_grid to the game.
 ds_grid_destroy(current_maze);
 current_maze = ds_grid_create(maze_size,maze_size);
 ds_grid_copy(current_maze,maze_grid);
+
+//Passed all conditions.
+maze_conditions_passed = true;
 
 //Create player
 //instance_create(starting_x*tile_size+tile_size*2,starting_y*tile_size+tile_size,obj_player);

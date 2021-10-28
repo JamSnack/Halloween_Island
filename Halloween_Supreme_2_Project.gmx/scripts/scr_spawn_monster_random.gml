@@ -28,9 +28,16 @@ for(i=0;i<maze_size;i++)
 //Place the creatures.
 while(_amt>0)
 {
-    var selected_point = ds_list_find_value(potential_spawns,irandom(ds_list_size(potential_spawns)));
-    var inst = instance_create(selected_point[0]*tile_size,selected_point[1]*tile_size,obj_monster);
-    inst.mobID = _mob;
+    var selected_point = ds_list_find_value(potential_spawns,irandom(ds_list_size(potential_spawns)-1));
+    
+    if point_in_rectangle(selected_point[0]*tile_size,selected_point[1]*tile_size,view_xview,view_yview,view_xview+view_wview,view_yview+view_hview)
+    {
+        break;
+    }
+    
+    var inst = instance_create(selected_point[0]*tile_size+16,selected_point[1]*tile_size+16,obj_monster);
+    inst.mob_id = _mob;
+    inst.image_index = _mob;
     
     _amt -= 1;
 }

@@ -11,11 +11,27 @@ switch argument0
     }
     break;
     
-    case mobID.corn_coblin:
+    case mobID.punkler:
     {
-        info[0] = "Corn-Coblin";
-        info[1] = 1;
-        info[2] = 10;
+        info[0] = "Greivous Punkler";
+        info[1] = 1+(difficulty div 3);
+        info[2] = 10+(difficulty div 3)*2;
+    }
+    break;
+    
+    case mobID.handsome_patch:
+    {
+        info[0] = "Handsome Patch Protector";
+        info[1] = 3+(difficulty div 2);
+        info[2] = 25+(difficulty div 2)*2;
+    }
+    break;
+    
+    case mobID.corn_cretin:
+    {
+        info[0] = choose("Corn, the Witness","Corn Cretin");
+        info[1] = 5+(difficulty);
+        info[2] = 40+(difficulty)*2;
     }
     break;
     

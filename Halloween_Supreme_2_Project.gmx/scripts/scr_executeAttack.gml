@@ -27,7 +27,7 @@ if instance_exists(obj_battleControl)
             battle_timer = 0;
             hurt_flash = 1;
             
-            scr_playSound(snd_hurt,false,3,0,0,1,true);
+            scr_playSound(snd_hurt,false,3,-1,-1,1,true);
             
             if enemy_hp <= 0 then event_user(0);
         }

@@ -5,8 +5,8 @@ var name = "";
 switch argument0
 {
     case itemID.sword: { name = "Sword"; } break;
-    case itemID.potion_hp: { name = "Health Potion"; } break;
-    case itemID.potion_mana: { name = "Mana Potion"; } break;
+    case itemID.potion_hp: { name = "Red Treat"; } break;
+    case itemID.potion_mana: { name = "Blue Treat"; } break;
     default: {name = "NULL";}
 }
 

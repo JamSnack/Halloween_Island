@@ -26,6 +26,13 @@
           <argument>
             <kind>1</kind>
             <string>follow_this = obj_player;
+
+audio_listener_set_orientation(0,0,0,1000,0,-1,0);
+
+zoom = 1;
+zoom_speed = 3;
+x_zoom = 256/zoom;
+y_zoom = 256/zoom;
 </string>
           </argument>
         </arguments>
@@ -48,14 +55,37 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if instance_exists(follow_this)
+            <string>if game_state == "GAMEPLAY" &amp;&amp; instance_exists(follow_this)
 {
-    x = approach(x,follow_this.x,abs(x/follow_this.x)*5);
-    y = approach(y,follow_this.y,abs(y/follow_this.y)*5);
+    x = approach(x,follow_this.x,1+(x/follow_this.x)*5);
+    y = approach(y,follow_this.y,1+(y/follow_this.y)*5);
+}
+else if game_state == "INTERM" &amp;&amp; instance_exists(obj_maze_generator)
+{
+    var maze_size = obj_maze_generator.maze_size;
+    var tile_size = obj_maze_generator.maze_size;
+    var target = floor(maze_size/2)*tile_size;
+    
+    x = approach(x,target,1+(x/target)*5);
+    y = approach(y,target,1+(y/target)*5);
 }
 
-view_xview = x-view_wview/2;
-view_yview = y-view_hview/2;
+view_xview = round(x-view_wview/2);
+view_yview = round(y-view_hview/2);
+
+//Zoom!
+x_zoom = 256/zoom;
+y_zoom = 256/zoom;
+
+if (view_wview != x_zoom) || (view_hview != y_zoom)
+{
+    view_wview = approach(view_wview,x_zoom,(zoom_speed*view_wview/x_zoom)*zoom_speed);
+    view_hview = approach(view_hview,y_zoom,(zoom_speed*view_hview/y_zoom)*zoom_speed);
+}
+
+
+//Set listener position.
+audio_listener_set_position(0,x,y,0);
 </string>
           </argument>
         </arguments>

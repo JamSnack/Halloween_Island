@@ -40,7 +40,8 @@ enum STATS
     mp,
     attack,
     defense,
-    level
+    level,
+    xp
 }
 
 global.player_stats = array_create(7);
@@ -51,27 +52,36 @@ global.player_stats[STATS.mp] = 100; //Player current MP
 global.player_stats[STATS.attack] = 1; //Attack stat
 global.player_stats[STATS.defense] = 0; //Defense stat
 global.player_stats[STATS.level] = 1; //Player level :)
+global.player_stats[STATS.xp] = 0; //Player XP;
 
 //Init mobID
 enum mobID
 {
     sphere_elite,
     Apro,
-    corn_coblin,
+    punkler,
+    handsome_patch,
+    corn_cretin
 }
 
 //Init actions
 enum battle_attack
 {
-    slash,
-    fireball
+    //Basic attacks must come first and in the order they're unlocked.
+    pinch,
+    slap,
+    smash,
+    destroy,
+    obliterate,
+    remove_flesh,
+    
+    //Magic attacks can be listed in any order.
+    magic_pinch,
 }
 
 //Init unlocked actions
 //Note: An unlocked attack is set to 1, otherwise the attack is set to 0.
-global.unlocked_attacks = array_create(2);
-global.unlocked_attacks[battle_attack.slash] = 1;
-global.unlocked_attacks[battle_attack.fireball] = 1;
+global.unlocked_attacks = array_create(battle_attack.magic_pinch+1); //the size is equal to the amount of attacks.
 
 //Music
 global.music = noone;
@@ -93,9 +103,10 @@ global.battle_items[itemID.potion_mana] = 1;
 
 
 //GLOBALVAR
-globalvar game_state,difficulty,game_time,current_maze,paused,mp_maze_grid;
+globalvar game_state,difficulty,maze_difficulty,game_time,current_maze,paused,mp_maze_grid;
 game_state = "MAZE_GENERATE";
-difficulty = 0;
+difficulty = 1;
+maze_difficulty = 1;
 game_time = 0;
 current_maze = ds_grid_create(0,0);
 mp_maze_grid = mp_grid_create(0,0,0,0,32,32);
@@ -106,6 +117,12 @@ game_time_ms = 0; //These game_time_# variables are used when drawing the timer.
 game_time_s = 0;
 game_time_m = 0;
 game_time_h = 0;
+interm_init = false; //Whether or not the intermission initialization event has been run.
+target_xp = 10; //How much XP is required to level up.
+
+//Equip level 1 kit.
+scr_level_kit(global.player_stats[STATS.level]);
+
 </string>
           </argument>
         </arguments>
@@ -129,6 +146,10 @@ game_time_h = 0;
           <argument>
             <kind>1</kind>
             <string>///DEATH AND GAME STATE
+//Vars
+var battle_exists = instance_exists(obj_battleControl);
+
+//Death
 if global.player_stats[STATS.hp] &lt;= 0
 {
     show_debug_message("The player is dead!");
@@ -140,10 +161,42 @@ switch game_state
 {
     case "GAMEPLAY":
     {
+        //prime intermission for next use.
+        interm_init = false;
+        
+        var monster_spawns = clamp(1+(difficulty div 3),1,25);
+        
+        
         //Spawn creatures inside the maze
-        if instance_number(obj_monster) &lt; 5
+        if instance_number(obj_monster) &lt; monster_spawns &amp;&amp; (game_time mod 100 == 0)
         {
-            scr_spawn_monster_random(mobID.sphere_elite,1);
+            //Select monsters
+            var mob_list = ds_list_create();
+            
+            if difficulty &lt; 10
+            {
+                ds_list_add(mob_list,mobID.punkler);
+            }
+            else if difficulty &gt;= 10 &amp;&amp; difficulty &lt; 25
+            {
+                ds_list_add(mob_list,mobID.punkler);
+                ds_list_add(mob_list,mobID.handsome_patch);
+            }
+            else if difficulty &gt;= 25 &amp;&amp; difficulty &lt; 40
+            {
+                ds_list_add(mob_list,mobID.punkler);
+                ds_list_add(mob_list,mobID.handsome_patch);
+                ds_list_add(mob_list,mobID.corn_cretin);
+            }
+            else if difficulty &gt;= 40 &amp;&amp; difficulty &lt;= 75
+            {
+                ds_list_add(mob_list,mobID.handsome_patch);
+                ds_list_add(mob_list,mobID.corn_cretin);
+            }
+        
+            scr_spawn_monster_random(mob_list[| irandom(ds_list_size(mob_list)-1)],1);
+            show_debug_message(string(mob_list[| irandom(ds_list_size(mob_list)-1)]));
+            ds_list_destroy(mob_list);
         }
         
         //Update game-time during gameplay
@@ -152,9 +205,74 @@ switch game_state
         if (game_time_ms != 0 &amp;&amp; game_time_ms mod 60 == 0) { game_time_ms = 0; game_time_s += 1; } //Seconds
         if (game_time_s != 0 &amp;&amp; game_time_s mod 60 == 0) { game_time_s = 0; game_time_m += 1; } //Minutes
         if (game_time_m != 0 &amp;&amp; game_time_m mod 60 == 0) { game_time_m = 0; game_time_h += 1; } //Hours
+        
+        //Update game difficulty based on game_time;
+        if game_time mod 2750 == 0
+        {
+            difficulty++;
+            show_debug_message("Difficulty: "+string(difficulty));
+        }
+        
+        //Regenerate HP and MP!
+        if !battle_exists &amp;&amp; game_time mod 300 == 0
+        {
+            if global.player_stats[STATS.hp] &lt; global.player_stats[STATS.maxHp] then global.player_stats[STATS.hp] += 1;
+            if global.player_stats[STATS.mp] &lt; global.player_stats[STATS.maxMp] then global.player_stats[STATS.mp] += 1;
+        }
+    }
+    break;
+    
+    case "INTERM":
+    {
+        if interm_init = false
+        {
+            interm_init = true;
+            scr_overMessage("Maze Clear!",0,4,c_white);
+            
+            //Clear old maze;
+            if instance_exists(obj_wall)
+            {
+                with obj_wall instance_destroy();
+            }
+            
+            if instance_exists(obj_road)
+            {
+                with obj_road instance_destroy();
+            }
+            
+            //Create new maze;
+            if !instance_exists(obj_maze_generator) then instance_create(0,0,obj_maze_generator);
+        }
     }
     break;
 }
+
+
+//--------LEVEL UPS!-------------
+if !battle_exists &amp;&amp; target_xp &lt;= global.player_stats[STATS.xp]
+{
+    global.player_stats[STATS.xp] = 0;
+    global.player_stats[STATS.level]++;
+    global.player_stats[STATS.hp] += 25;
+    global.player_stats[STATS.maxHp] += 25;
+    global.player_stats[STATS.maxMp] += 10;
+    global.player_stats[STATS.mp] += 10;
+    
+    var _level = global.player_stats[STATS.level];
+    
+    scr_hudMessage("Level Up!",0,5,c_white);
+    scr_hudMessage("+25 HP",0,5,c_red);
+    scr_hudMessage("+10 MP",0,5,c_aqua);
+    scr_hudMessage("Level "+string(_level),0,5,c_green);
+    
+    scr_level_kit(_level);
+    
+    target_xp = 10*_level+(10*(10* _level div 2));
+}
+
+//--------STAT VALUE MANAGEMENT: CLAMPS!!-----
+global.player_stats[STATS.hp] = clamp(global.player_stats[STATS.hp],0,global.player_stats[STATS.maxHp]);
+global.player_stats[STATS.mp] = clamp(global.player_stats[STATS.mp],0,global.player_stats[STATS.maxMp]);
 </string>
           </argument>
         </arguments>
@@ -206,8 +324,34 @@ switch game_state
 //Draw game timer
 draw_set_font(global.fnt_outlined);
 draw_set_color(c_white);
+
+var scale = 0.75;
+
 draw_text(10,10,string(game_time_h)+":"+string(game_time_m)+":"+string(game_time_s)+"."+string(game_time_ms));
 
+if !instance_exists(obj_battleControl)
+{
+
+    //Draw game difficulty
+    draw_text_transformed(10,28,"Difficulty: "+string(difficulty),scale,scale,0);
+    draw_text_transformed(10,36,"Maze Difficulty: "+string(maze_difficulty),scale,scale,0);
+    
+    //Draw keys remaining
+    if instance_exists(obj_key)
+    {
+        draw_text_transformed(10,20,"Keys remaining: "+string(instance_number(obj_key)),scale,scale,0);
+    } else draw_text_transformed(10,20,"Door Unlocked",scale,scale,0);
+    
+    //Draw XP
+    scale = 0.6;
+    draw_text_transformed(10,218,"EXP: "+string(global.player_stats[STATS.xp])+"/"+string(target_xp),scale,scale,0);
+    
+    //Draw HP and MP
+    draw_set_color(c_red);
+    draw_text_transformed(10,212,"HP: "+string(global.player_stats[STATS.hp])+"/"+string(global.player_stats[STATS.maxHp]),scale,scale,0);
+    draw_set_color(c_aqua);
+    draw_text_transformed(10,206,"MP: "+string(global.player_stats[STATS.mp])+"/"+string(global.player_stats[STATS.maxMp]),scale,scale,0);
+}
 //TEMPORARY: Draw the inventory
 /*var drawn_items = 0;
 draw_set_font(global.fnt_outlined);

@@ -206,7 +206,7 @@ if player_turn == true &amp;&amp; battle_exit == false
                 {
                     attack_action_selected -= 1;
                 }
-                else if key_down &amp;&amp; attack_action_selected &lt; 1 //NOTE: Replace with number of options in the future
+                else if key_down &amp;&amp; attack_action_selected &lt; ds_list_size(possible_attacks)-1
                 {
                     attack_action_selected += 1;
                 }
@@ -243,7 +243,7 @@ if player_turn == true &amp;&amp; battle_exit == false
                 {
                     item_action_selected -= 1;
                 }
-                else if key_down &amp;&amp; item_action_selected &lt; 1 //NOTE: Replace with number of options in the future
+                else if key_down &amp;&amp; item_action_selected &lt; ds_list_size(possible_items)-1
                 {
                     item_action_selected += 1;
                 }
@@ -305,10 +305,11 @@ else if battle_exit == false
     {
         //The enemy executes an attack!
         global.player_stats[STATS.hp] -= enemy_level;
+        global.player_stats[STATS.mp] += 10; //passive mana regen
         battle_string += ("You take "+string(enemy_level)+" damage.#");
         player_turn = true;
         action_finalized = noone;
-        scr_playSound(snd_player_hurt,false,3,0,0,1,true);
+        scr_playSound(snd_player_hurt,false,3,-1,-1,1,true);
         //Note: Screenshake will not work with draw GUI atm!
     }
 }
@@ -417,7 +418,7 @@ if battle_exit == true
 //---------MANAGE SOUNDS------------
 if key_left || key_right || key_select || key_up || key_down || key_cancel
 {
-    scr_playSound(snd_generic_selection,false,2,0,0,1,false);
+    scr_playSound(snd_generic_selection,false,2,-1,-1,1,false);
 }
 
 //-------DEATH ANIMATION PARTICLES----
@@ -457,7 +458,7 @@ if image_alpha == 0 &amp;&amp; battle_exit == true &amp;&amp; death_explosion ==
             <kind>1</kind>
             <string>///END THE BATTLE
 //NOTE: Replace reward values with more intelligent functions later.
-var reward_exp = enemy_level*10;
+var reward_exp = (enemy_hp div 10) + enemy_level*5;
 var reward_gold = enemy_level*100;
 
 //Enemy defeated?
@@ -471,6 +472,17 @@ if enemy_hp &lt;= 0
     enemy_hp = 0;
     battle_string = "";
     battle_string += (enemy_name+" deafeted!#+"+string(reward_exp)+" EXP! +"+string(reward_gold)+" Candy!");
+    
+    //Award the stuff!
+    global.player_stats[STATS.xp] += reward_exp;
+    
+    if instance_exists(obj_monster)
+    {
+        with obj_monster
+        {
+            flee_timer += 30;
+        }
+    }
 }
 
 //Battle exit stuff

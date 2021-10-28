@@ -28,6 +28,8 @@
             <string>size = 1;
 time = 0;
 flick_offset = 0;
+
+scr_playSound(snd_beam,false,2,x,y,1,false);
 </string>
           </argument>
         </arguments>

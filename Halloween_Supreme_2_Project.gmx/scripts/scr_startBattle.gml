@@ -5,12 +5,15 @@ var init_instance = argument2;
 
 var _mob_data = scr_getEnemyInfo(_mob);
 
+show_debug_message(_mob_data[0]+" starts a battle.");
+
 //Instantaite battle control
 if !instance_exists(obj_battleControl)
 {
     //Initialize the enemy!
     var _bat = instance_create(0,0,obj_battleControl);
     _bat.enemy_id = _mob;
+    _bat.image_index = _mob;
     _bat.background = scr_getBackground(_location);
     _bat.enemy_name = _mob_data[0];
     _bat.enemy_level = _mob_data[1];
@@ -20,7 +23,7 @@ if !instance_exists(obj_battleControl)
     
     with _bat
     {
-        battle_string += (enemy_name+choose(" approaches!"," seeks violence."," engages you!")+"#");
+        battle_string += (enemy_name+choose(" leaps from the shadows!"," bares its fangs!"," approaches!"," seeks violence."," engages you!"," is being a jerk."," picked trick!"," treats itself to a battle."," is feeling confident!")+"#");
     }
     
     
@@ -33,7 +36,7 @@ if !instance_exists(obj_battleControl)
         _bat.player_turn = true;*/
     
     show_debug_message("A battle has begun!");
-    show_debug_message("Player turn?: "+string(_bat.player_turn));
+    //show_debug_message("Player turn?: "+string(_bat.player_turn));
 }
 else
 {

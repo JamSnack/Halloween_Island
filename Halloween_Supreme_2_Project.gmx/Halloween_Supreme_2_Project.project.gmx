@@ -8,6 +8,7 @@
     <sound>sound\snd_BeepBox_Song</sound>
     <sound>sound\snd_generic_selection</sound>
     <sound>sound\snd_battle_theme</sound>
+    <sound>sound\snd_beam</sound>
     <sound>sound\snd_hurt</sound>
     <sound>sound\snd_player_hurt</sound>
   </sounds>
@@ -72,6 +73,10 @@
     <script>scripts\scr_spawn_monster_random.gml</script>
     <script>scripts\scr_spawn_monster.gml</script>
     <script>scripts\scr_pause_game.gml</script>
+    <script>scripts\scr_overMessage.gml</script>
+    <script>scripts\scr_hudMessage.gml</script>
+    <script>scripts\scr_popMessage.gml</script>
+    <script>scripts\scr_level_kit.gml</script>
   </scripts>
   <shaders name="shaders">
     <shader type="GLSLES">shaders\shd_flash.shader</shader>
@@ -97,6 +102,9 @@
     <object>objects\obj_monster</object>
     <object>objects\efct_spawn_beam</object>
     <object>objects\OVERWORLD_PAUSE</object>
+    <object>objects\efct_overMessage</object>
+    <object>objects\efct_popMessage</object>
+    <object>objects\efct_hudMessage</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\room_world</room>
