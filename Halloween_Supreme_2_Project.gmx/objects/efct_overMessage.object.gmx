@@ -107,7 +107,8 @@ while string_width(str)*scale &gt; 256-20 //256 is window size, 20 is a margin.
             <kind>1</kind>
             <string>draw_set_font(font);
 draw_set_colour(color);
-draw_text_transformed(view_wview/2-(string_width(str)*scale)/2,yy,str,scale,scale,0);
+//128 = 256/2; aka the middle of the window
+draw_text_transformed(128-(string_width(str)*scale)/2,yy,str,scale,scale,0);
 </string>
           </argument>
         </arguments>
