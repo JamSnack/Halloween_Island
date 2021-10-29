@@ -304,9 +304,10 @@ else if battle_exit == false
     if battle_timer &gt; room_speed*2
     {
         //The enemy executes an attack!
-        global.player_stats[STATS.hp] -= enemy_level;
+        var dam =  irandom_range(enemy_level*4-enemy_level,enemy_level*4);
+        global.player_stats[STATS.hp] -= dam;
         global.player_stats[STATS.mp] += 10; //passive mana regen
-        battle_string += ("You take "+string(enemy_level)+" damage.#");
+        battle_string += ("You take "+string(dam)+" damage.#");
         player_turn = true;
         action_finalized = noone;
         scr_playSound(snd_player_hurt,false,3,-1,-1,1,true);
@@ -394,6 +395,7 @@ if battle_exit == true
     //Exit the fight
     if battle_timer &gt; 4*room_speed
     {
+        //scr_musicTransition(snd_The_Maw_of_the_Maze,0);
         instance_destroy();
     }
     
@@ -471,7 +473,7 @@ if enemy_hp &lt;= 0
     
     enemy_hp = 0;
     battle_string = "";
-    battle_string += (enemy_name+" deafeted!#+"+string(reward_exp)+" EXP! +"+string(reward_gold)+" Candy!");
+    battle_string += (enemy_name+" deafeted!#+"+string(reward_exp)+" EXP!"); //+string(reward_gold)+" Candy!"
     
     //Award the stuff!
     global.player_stats[STATS.xp] += reward_exp;
@@ -490,6 +492,7 @@ battle_exit = true;
 battle_timer = 0;
 action_finalized = noone;
 ds_list_destroy(possible_attacks);
+ds_list_destroy(possible_items);
 </string>
           </argument>
         </arguments>

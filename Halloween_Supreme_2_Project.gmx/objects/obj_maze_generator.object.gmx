@@ -98,6 +98,12 @@ camera.zoom = 0.2;
 //camera.y = floor(maze_size/2)*tile_size;
 camera.follow_this = 'MAZE';
 camera.zoom_speed = 8;
+
+//Music
+/*if global.music != snd_The_Maw_of_the_Maze
+{
+    scr_musicTransition(snd_The_Maw_of_the_Maze,3);
+}
 </string>
           </argument>
         </arguments>

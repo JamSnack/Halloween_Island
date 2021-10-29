@@ -11,6 +11,7 @@
     <sound>sound\snd_beam</sound>
     <sound>sound\snd_hurt</sound>
     <sound>sound\snd_player_hurt</sound>
+    <sound>sound\snd_The_Maw_of_the_Maze</sound>
   </sounds>
   <sprites name="sprites">
     <sprites name="JamSnack's Sprites">
@@ -26,10 +27,13 @@
       <sprite>sprites\spr_tile_small</sprite>
     </sprites>
     <sprite>sprites\spr_ui_battle_option_selector</sprite>
+    <sprite>sprites\spr_tile_suck</sprite>
     <sprite>sprites\spr_cedrick</sprite>
     <sprite>sprites\spr_door</sprite>
     <sprite>sprites\spr_key</sprite>
     <sprite>sprites\spr_sphere</sprite>
+    <sprite>sprites\spr_grass</sprite>
+    <sprite>sprites\spr_maze_wall</sprite>
   </sprites>
   <backgrounds name="background">
     <backgrounds name="JamSnack's Backgrounds">

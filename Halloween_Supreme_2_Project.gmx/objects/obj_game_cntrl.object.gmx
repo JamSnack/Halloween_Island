@@ -45,10 +45,10 @@ enum STATS
 }
 
 global.player_stats = array_create(7);
-global.player_stats[STATS.maxHp] = 100; //Player maxHp
-global.player_stats[STATS.hp] = 100; //Player current HP
-global.player_stats[STATS.maxMp] = 100; //Player max MP
-global.player_stats[STATS.mp] = 100; //Player current MP
+global.player_stats[STATS.maxHp] = 25; //Player maxHp
+global.player_stats[STATS.hp] = 25; //Player current HP
+global.player_stats[STATS.maxMp] = 10; //Player max MP
+global.player_stats[STATS.mp] = 10; //Player current MP
 global.player_stats[STATS.attack] = 1; //Attack stat
 global.player_stats[STATS.defense] = 0; //Defense stat
 global.player_stats[STATS.level] = 1; //Player level :)
@@ -122,6 +122,8 @@ target_xp = 10; //How much XP is required to level up.
 
 //Equip level 1 kit.
 scr_level_kit(global.player_stats[STATS.level]);
+
+audio_play_sound(snd_The_Maw_of_the_Maze,5,true);
 
 </string>
           </argument>
@@ -214,7 +216,7 @@ switch game_state
         }
         
         //Regenerate HP and MP!
-        if !battle_exists &amp;&amp; game_time mod 300 == 0
+        if !battle_exists &amp;&amp; game_time mod 360 == 0
         {
             if global.player_stats[STATS.hp] &lt; global.player_stats[STATS.maxHp] then global.player_stats[STATS.hp] += 1;
             if global.player_stats[STATS.mp] &lt; global.player_stats[STATS.maxMp] then global.player_stats[STATS.mp] += 1;
@@ -251,17 +253,22 @@ switch game_state
 //--------LEVEL UPS!-------------
 if !battle_exists &amp;&amp; target_xp &lt;= global.player_stats[STATS.xp]
 {
-    global.player_stats[STATS.xp] = 0;
     global.player_stats[STATS.level]++;
-    global.player_stats[STATS.hp] += 25;
-    global.player_stats[STATS.maxHp] += 25;
+    
+    var _level = global.player_stats[STATS.level];
+    var hp_gain = 5*(_level-1);
+    
+    
+    global.player_stats[STATS.xp] = 0;
+    global.player_stats[STATS.hp] += hp_gain;
+    global.player_stats[STATS.maxHp] += hp_gain;
     global.player_stats[STATS.maxMp] += 10;
     global.player_stats[STATS.mp] += 10;
     
-    var _level = global.player_stats[STATS.level];
+    
     
     scr_hudMessage("Level Up!",0,5,c_white);
-    scr_hudMessage("+25 HP",0,5,c_red);
+    scr_hudMessage("+"+string(hp_gain)+" HP",0,5,c_red);
     scr_hudMessage("+10 MP",0,5,c_aqua);
     scr_hudMessage("Level "+string(_level),0,5,c_green);
     

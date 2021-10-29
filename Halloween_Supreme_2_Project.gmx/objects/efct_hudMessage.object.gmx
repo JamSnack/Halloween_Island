@@ -174,7 +174,7 @@ if new_position != 0 &amp;&amp; new_position &gt; instance_number(efct_hudMessag
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>var y_pos = 150+(12*position);
+            <string>var y_pos = 130+(12*position);
 
 draw_rectangle_colour(0,y_pos-(4*scale),bkg_x*scale,y_pos+(6*scale),bkg_color,bkg_color,bkg_color,bkg_color,false);
 

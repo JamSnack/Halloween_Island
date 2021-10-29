@@ -32,6 +32,8 @@ mask_index = spr_cedrick;
 instance_create(x,y+8,efct_spawn_beam);
 
 scr_overMessage("Find the keys and escape the maze!",0,3,c_orange);
+
+audio_play_sound(snd_The_Maw_of_the_Maze,5,true);
 </string>
           </argument>
         </arguments>
@@ -116,6 +118,8 @@ else
         }
     }
 }
+
+depth = -y-1;
 
 </string>
           </argument>

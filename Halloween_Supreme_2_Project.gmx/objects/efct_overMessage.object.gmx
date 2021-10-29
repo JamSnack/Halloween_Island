@@ -25,7 +25,7 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>yy = -10;
+            <string>yy = -10; //Starting point. YY will lerp to target point
 scale = 2;
 </string>
           </argument>
@@ -72,7 +72,7 @@ scale = 2;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>var targ_y = 200;
+            <string>var targ_y = 190;
 
 if yy != targ_y
 {

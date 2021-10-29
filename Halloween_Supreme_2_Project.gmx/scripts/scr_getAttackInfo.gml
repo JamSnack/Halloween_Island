@@ -15,7 +15,7 @@ switch argument0
     {
         info[0] = "Magic Pinch"; //Name
         info[1] = irandom_range(10,25); //Damage
-        info[2] = 25; //MP Cost
+        info[2] = 15; //MP Cost
     }
     break;
     

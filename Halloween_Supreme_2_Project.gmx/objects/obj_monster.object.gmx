@@ -37,6 +37,7 @@ vspd = 0;
 image_xscale = 0.25;
 image_yscale = 0.25;
 image_speed = 0;
+//mask_index = spr_cedrick;
 
 flee_timer = 1*room_speed; //If a battle is fled successfully, disable this enemy for a while.
 
@@ -123,6 +124,9 @@ if collision_rectangle(bbox_left+inset,bbox_top+inset,bbox_right-inset,bbox_bott
     show_debug_message("Destroyed a monster inside a wall.");
     instance_destroy();
 }
+*/
+
+depth = -y-1;
 </string>
           </argument>
         </arguments>
