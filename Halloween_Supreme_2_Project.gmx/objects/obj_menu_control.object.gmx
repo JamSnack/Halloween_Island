@@ -25,14 +25,17 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>follow_this = obj_player;
+            <string>title_size_max = 0.005;
+title_size = 0;
+title_size_rate_reversed = 1; //-1 to reverse
+title_size_rate = 0.000075;
 
-audio_listener_set_orientation(0,0,0,1000,0,-1,0);
 
-zoom = 1;
-zoom_speed = 3;
-x_zoom = 256/zoom;
-y_zoom = 256/zoom;
+//Music
+if !audio_is_playing(snd_Eternal_Boredom)
+{
+    audio_play_sound(snd_Eternal_Boredom,5,true);
+}
 </string>
           </argument>
         </arguments>
@@ -55,37 +58,68 @@ y_zoom = 256/zoom;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if game_state == "GAMEPLAY" &amp;&amp; instance_exists(follow_this)
+            <string>title_size = approach(title_size, title_size_max*title_size_rate_reversed, title_size_rate );
+
+if title_size &gt;= title_size_max || title_size &lt;= -title_size_max
 {
-    x = approach(x,follow_this.x,1+(x/follow_this.x)*5);
-    y = approach(y,follow_this.y,1+(y/follow_this.y)*5);
+    title_size = title_size_max*title_size_rate_reversed;
+    title_size_rate_reversed = -title_size_rate_reversed;
 }
-else if game_state == "INTERM" &amp;&amp; instance_exists(obj_maze_generator)
-{
-    var maze_size = obj_maze_generator.maze_size;
-    var tile_size = obj_maze_generator.maze_size;
-    var target = floor(maze_size/2)*tile_size;
-    
-    x = approach(x,target,1+(x/target)*5);
-    y = approach(y,target,1+(y/target)*5);
-}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="64">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>var scale = 0.5+title_size;
+draw_sprite_ext(spr_title,0,30+(sprite_get_width(spr_title)*scale)/2,10,scale,scale,0,c_white,1);
 
-view_xview = round(x-view_wview/2);
-view_yview = round(y-view_hview/2);
-
-//Zoom!
-x_zoom = 256/zoom;
-y_zoom = 256/zoom;
-
-if (view_wview != x_zoom) || (view_hview != y_zoom)
-{
-    view_wview = approach(view_wview,x_zoom,(zoom_speed*(view_wview/x_zoom))*(zoom_speed));
-    view_hview = approach(view_hview,y_zoom,(zoom_speed*(view_hview/y_zoom))*(zoom_speed));
-}
-
-
-//Set listener position.
-audio_listener_set_position(0,x,y,0);
+//Draw text and shittttt I'm so fucking tired right now it's 2AM
+draw_set_colour(c_white);
+draw_set_halign(fa_center);
+draw_set_font(global.fnt_normal);
+draw_text_transformed(224/2+16,180,"Press 'Z' to Play",2.75,2.75,0);
+draw_set_halign(fa_left);
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="10" enumb="90">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>room_goto(room_world);
+audio_stop_all();
 </string>
           </argument>
         </arguments>

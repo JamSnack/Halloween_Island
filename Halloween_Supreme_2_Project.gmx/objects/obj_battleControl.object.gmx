@@ -87,7 +87,10 @@ init_instance = 0; //The instance that started the battle. If we kill the enemy 
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//------------Gather input-------------
+            <string>//Exit conditions
+if game_state == "PAUSE" || game_state == "DEATH" then exit;
+
+//------------Gather input-------------
 var key_select = (keyboard_check_released(vk_enter) || keyboard_check_released(ord('Z')));
 var key_left = (keyboard_check_released(vk_left) || keyboard_check_released(ord("A")));
 var key_right = (keyboard_check_released(vk_right) || keyboard_check_released(ord("D")));
@@ -253,9 +256,9 @@ if player_turn == true &amp;&amp; battle_exit == false
                 {
                     for(str_index=0;str_index&lt;array_length_1d(global.battle_items);str_index++)
                     {
-                        var _item = global.battle_items[str_index];
+                        //var _item = global.battle_items[str_index];
                         
-                        if _item == 1 &amp;&amp; global.inventory[| str_index] &gt; 0
+                        if global.inventory[| str_index] &gt; 0 //&amp;&amp; _item == 1
                         {
                             var _name = scr_getItemInfo(str_index);
                             item_string += (_name+" x"+string(scr_inven_find_item(str_index))+"#");
@@ -267,7 +270,7 @@ if player_turn == true &amp;&amp; battle_exit == false
                 }
                 
                 //Select an option and execute that attack!
-                if key_select
+                if key_select &amp;&amp; global.inventory[| item_action_selected] &gt; 0
                 {
                     scr_executeItem(possible_items[| item_action_selected]);
                 }
@@ -460,8 +463,9 @@ if image_alpha == 0 &amp;&amp; battle_exit == true &amp;&amp; death_explosion ==
             <kind>1</kind>
             <string>///END THE BATTLE
 //NOTE: Replace reward values with more intelligent functions later.
-var reward_exp = (enemy_hp div 10) + enemy_level*5;
+var reward_exp = (enemy_hp div 6) + enemy_level*(6+enemy_level);
 var reward_gold = enemy_level*100;
+var reward_loot = choose(noone,itemID.potion_hp,itemID.potion_mana);
 
 //Enemy defeated?
 if enemy_hp &lt;= 0
@@ -474,6 +478,13 @@ if enemy_hp &lt;= 0
     enemy_hp = 0;
     battle_string = "";
     battle_string += (enemy_name+" deafeted!#+"+string(reward_exp)+" EXP!"); //+string(reward_gold)+" Candy!"
+    
+    if reward_loot != noone
+    {
+        battle_string += ("#"+enemy_name+" dropped a " + string(scr_getItemInfo(reward_loot)+"."));
+        scr_inven_add_item(reward_loot, 1);
+        //show_debug_message("Rewarded Loot!");
+    }
     
     //Award the stuff!
     global.player_stats[STATS.xp] += reward_exp;
@@ -526,6 +537,8 @@ draw_set_font(global.fnt_outlined);
 //Draw the background
 draw_background(background,0,0);
 
+draw_set_colour(c_white);
+
 //Draw the enemy
 if image_alpha &gt; 0
 {
@@ -547,10 +560,13 @@ if image_alpha &gt; 0
 }
 
 //- hp and mp
-var hp_str = ("HP: "+string(global.player_stats[STATS.hp])+"");
-var mp_str = ("MP: "+string(global.player_stats[STATS.mp])+"");
+var hp_str = ("HP: "+string(global.player_stats[STATS.hp])+" / "+string(global.player_stats[STATS.maxHp]));
+var mp_str = ("MP: "+string(global.player_stats[STATS.mp])+" / "+string(global.player_stats[STATS.maxMp]));
 
+draw_set_colour(c_red);
 draw_text(wind_width-10-string_width(hp_str),wind_height-60,hp_str);
+
+draw_set_colour(c_aqua);
 draw_text(wind_width-10-string_width(mp_str),wind_height-50,mp_str);
 
 

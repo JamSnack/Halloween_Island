@@ -4,7 +4,7 @@
   <solid>0</solid>
   <visible>-1</visible>
   <depth>0</depth>
-  <persistent>0</persistent>
+  <persistent>-1</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
   <events>
@@ -56,6 +56,8 @@ if (gen_state &lt; 5)
             <string>/// Centers the game window one step after it is resized.
 
 window_center();
+
+room_goto(rm_menu);
 </string>
           </argument>
         </arguments>
@@ -79,6 +81,10 @@ window_center();
           <argument>
             <kind>1</kind>
             <string>/// Initializes important variables. Increases the window size to the highest suitable resolution.
+
+//Init font
+global.fnt_normal = font_add_sprite_ext(spr_fnt_ui,"!'#$%()*,-./0123456789:;&lt;=&gt;ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}.?+",0,0);
+global.fnt_outlined = font_add_sprite_ext(spr_fnt_ui_outlined,"!'#$%()*,-./0123456789:;&lt;=&gt;ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}.?+",0,0);
 
 // Sets the number of audio channels.
 audio_channel_num(9);
@@ -114,40 +120,6 @@ else if (display_get_width() &gt;= 768 &amp;&amp; display_get_height() &gt;= 672
 
 else if (display_get_width() &gt;= 512 &amp;&amp; display_get_height() &gt;= 448)
     event_perform(ev_keypress, vk_f2);
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="8" enumb="0">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/// Draws the overworld generation in progress.
-
-// Overworld generation...
-if (global.state == 0)
-{
-    for (j = 15; j &gt;= 0; j --)
-        for (i = 9; i &gt;= 0; i --)
-        {
-            if (global.tile[i, j] != -1)
-            draw_sprite(spr_tile_small, global.tile[i, j], 32 + 4 * i, 32 + 4 * j);
-        }
-}
 </string>
           </argument>
         </arguments>
@@ -310,34 +282,6 @@ scr_wind_scale(1);
             <string>/// TEMPORARY
 
 game_restart();
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="10" enumb="66">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>///TEMPORARY - BATTLE
-if !instance_exists(obj_battleControl)
-{
-    scr_startBattle(choose(0,1),noone,noone);
-}
-else instance_destroy(obj_battleControl);
 </string>
           </argument>
         </arguments>

@@ -12,6 +12,8 @@
     <sound>sound\snd_hurt</sound>
     <sound>sound\snd_player_hurt</sound>
     <sound>sound\snd_The_Maw_of_the_Maze</sound>
+    <sound>sound\snd_rewind</sound>
+    <sound>sound\snd_Eternal_Boredom</sound>
   </sounds>
   <sprites name="sprites">
     <sprites name="JamSnack's Sprites">
@@ -21,6 +23,7 @@
       <sprite>sprites\spr_fnt_ui_outlined</sprite>
       <sprite>sprites\spr_battle_option</sprite>
       <sprite>sprites\spr_battle_shadow</sprite>
+      <sprite>sprites\spr_shadow</sprite>
     </sprites>
     <sprites name="Taska's Sprites">
       <sprite>sprites\spr_text</sprite>
@@ -34,6 +37,9 @@
     <sprite>sprites\spr_sphere</sprite>
     <sprite>sprites\spr_grass</sprite>
     <sprite>sprites\spr_maze_wall</sprite>
+    <sprite>sprites\spr_logo</sprite>
+    <sprite>sprites\spr_title</sprite>
+    <sprite>sprites\spr_black</sprite>
   </sprites>
   <backgrounds name="background">
     <backgrounds name="JamSnack's Backgrounds">
@@ -109,9 +115,12 @@
     <object>objects\efct_overMessage</object>
     <object>objects\efct_popMessage</object>
     <object>objects\efct_hudMessage</object>
+    <object>objects\obj_menu_control</object>
   </objects>
   <rooms name="rooms">
+    <room>rooms\rm_init</room>
     <room>rooms\room_world</room>
+    <room>rooms\rm_menu</room>
     <room>rooms\rm_battle_test</room>
   </rooms>
   <help>

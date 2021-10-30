@@ -27,8 +27,8 @@
             <kind>1</kind>
             <string>mob_id = mobID.sphere_elite;
 state = "MOVE";
-target_x = x;
-target_y = y;
+target_x = noone;
+target_y = noone;
 
 walkspeed = 1;
 hspd = 0;
@@ -45,6 +45,8 @@ instance_create(x,y+8,efct_spawn_beam);
 
 path = path_add();
 path_calculated = false;
+
+time = 0;
 </string>
           </argument>
         </arguments>
@@ -70,7 +72,12 @@ path_calculated = false;
             <string>///MAIN
 
 //-------Step Event Disabling Conditions------------
-if instance_exists(obj_battleControl) then exit;
+if instance_exists(obj_battleControl) || game_state == "PAUSE"
+{
+    if path_exists(path) then path_end();
+    path_calculated = false;
+    exit;
+}
 
 if flee_timer &gt; 0
 {
@@ -78,7 +85,27 @@ if flee_timer &gt; 0
     exit;
 }
 
+//-------Recalculate the path every few seconds to avoid path calculation glitches-----
+if (time mod 180 == 0)
+{
+    time = 0;
+    path_calculated = false;
+    //target_x = (irandom(ds_grid_width(current_maze)*32)+16);
+    //target_y = (irandom(ds_grid_width(current_maze)*32)+16);
+    /*if path_exists(path)
+    {
+        path_end();
+        path_delete(path);
+        path = path_add();
+    }*/
+    
+}
+
+time++;
+
 //----------------Establish line of sight-------------
+var col = collision_point(target_x,target_y,obj_wall,false,true);
+
 if !collision_line(x,y,obj_player.x,obj_player.y,obj_wall,false,true)
 {
     target_x = obj_player.x;
@@ -86,28 +113,31 @@ if !collision_line(x,y,obj_player.x,obj_player.y,obj_wall,false,true)
     
     path_calculated = false;
 }
-else if distance_to_point(target_x,target_y) &lt; 2
+else if distance_to_point(target_x,target_y) &lt; 2 || (target_x == noone &amp;&amp; target_y == noone) || col != noone
 {
     //32 = tile_size;
     target_x = (irandom(ds_grid_width(current_maze)*32)+16);
     target_y = (irandom(ds_grid_width(current_maze)*32)+16);
     
     //Avoid setting a target point in an unreachable location.
-    if collision_point(target_x,target_y,obj_wall,false,true)
+    while col != noone
     {
-        target_x = x;
-        target_y = y;
+        target_x = (irandom(ds_grid_width(current_maze)*32)+16);
+        target_y = (irandom(ds_grid_width(current_maze)*32)+16);
+        col = collision_point(target_x,target_y,obj_wall,false,true);
     }
     
     path_calculated = false;
 }
 
-//Move
-if path_calculated == false &amp;&amp; mp_grid_path(mp_maze_grid,path,x,y,target_x,target_y,true)
+//Calculate a path and then move on it
+if path_calculated == false &amp;&amp; (target_x != noone &amp;&amp; target_y != noone) &amp;&amp; mp_grid_path(mp_maze_grid,path,x,y,target_x,target_y,true)
 {
     path_start(path, walkspeed, path_action_stop, 0);
     path_calculated = true;
 }
+
+//Ensure a path doesn't exist if we didn't start one
 
 //---------Battle Control------------
 if !instance_exists(obj_battleControl) &amp;&amp; distance_to_object(obj_player) &lt; 2
@@ -126,7 +156,38 @@ if collision_rectangle(bbox_left+inset,bbox_top+inset,bbox_right-inset,bbox_bott
 }
 */
 
-depth = -y-1;
+depth = -bbox_bottom-1;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>draw_sprite(spr_shadow,0,x,y+8);
+draw_self();
+/*draw_path(path,x,y,false);
+draw_text(x,y+5,"path_calculated: "+string(path_calculated));
+draw_text(x,y+15,"path_exists: "+string(path_exists(path)));
+draw_text(x,y+25,"name: "+string(id));
+draw_text(x,y+35,"target: "+string(target_x)+","+string(target_y)+" Blocked: "+string(collision_point(target_x,target_y,obj_wall,false,true)));
+draw_text(x,y+45,"time: "+string(time));
+
 </string>
           </argument>
         </arguments>

@@ -8,6 +8,29 @@
   <parentName>OVERWORLD_PAUSE</parentName>
   <maskName>&lt;undefined&gt;</maskName>
   <events>
+    <event eventtype="0" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>diff_created = maze_difficulty;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="1" enumb="0">
       <action>
         <libid>1</libid>
@@ -26,6 +49,8 @@
           <argument>
             <kind>1</kind>
             <string>//If this is the last key
+if instance_exists(obj_maze_generator) then exit;
+
 if instance_number(obj_key) == 1
 {
     //Open the damn door
@@ -35,6 +60,13 @@ if instance_number(obj_key) == 1
         show_debug_message("Door unlocked!");
     }
 }
+
+
+//XP
+var _x = diff_created*5+(diff_created*diff_created); //XP Reward
+global.player_stats[STATS.xp] += _x;
+
+scr_hudMessage("+"+string(_x)+" XP",global.fnt_normal,3,c_purple);
 </string>
           </argument>
         </arguments>

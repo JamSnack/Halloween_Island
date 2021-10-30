@@ -100,9 +100,13 @@ camera.follow_this = 'MAZE';
 camera.zoom_speed = 8;
 
 //Music
-/*if global.music != snd_The_Maw_of_the_Maze
+if audio_is_playing(snd_The_Maw_of_the_Maze)
 {
-    scr_musicTransition(snd_The_Maw_of_the_Maze,3);
+    audio_sound_gain(global.music,0,500);
+    snd_rew = audio_play_sound(snd_rewind,5,false);
+    snd_back_music = audio_play_sound(snd_Eternal_Boredom,5,true);
+    audio_sound_gain(snd_back_music,0.5,180);
+    audio_sound_gain(snd_rew,0.8,120);
 }
 </string>
           </argument>
@@ -153,6 +157,23 @@ else
 
 game_state = "GAMEPLAY";
 camera.follow_this = obj_player;
+
+
+//Music and rewind sound
+if audio_sound_get_gain(global.music) != 1
+{
+    audio_sound_gain(global.music,1,120);
+}
+
+if audio_is_playing(snd_rewind)
+{
+    audio_sound_gain(snd_rew,0,200);
+}
+
+if audio_is_playing(snd_Eternal_Boredom)
+{
+    audio_stop_sound(snd_back_music);
+}
 </string>
           </argument>
         </arguments>
@@ -176,7 +197,7 @@ camera.follow_this = obj_player;
           <argument>
             <kind>1</kind>
             <string>///CARVE THE LABYRINTH!
-//if (time mod time_framerate == 0) then exit;
+if game_state == "PAUSE" || game_state == "DEATH" then exit;
 
 //NOTE: When checking for grid coordinates, an invalid coordinate will also return 0.
 if maze_complete == false
@@ -429,7 +450,7 @@ if horizontal_exit = true
     var _y = choose(0,maze_size-1);
     var _x = irandom_range(1,maze_size-2);
     
-    ds_grid_set(maze_grid,_x,_y,0);
+    ds_grid_set(maze_grid,_x,_y,1);
     instance_create(_x*tile_size,_y*tile_size,obj_door);
     
     //if the exit is at the bottom of the map, build up
@@ -512,14 +533,34 @@ for(i=0;i&lt;maze_size;i++)
 {
     for(f=0;f&lt;maze_size;f++)
     {
-        if ds_grid_get(maze_grid,f,i) == 1
+        var door_pos_check = collision_point(tile_size*f+16,tile_size*i+16,obj_door,false,true);
+    
+        if ds_grid_get(maze_grid,f,i) == 1 &amp;&amp; door_pos_check == noone
         {
             instance_create(tile_size*f,tile_size*i,obj_wall);
         }
-        else if ds_grid_get(maze_grid,f,i) == 0 
+        else if ds_grid_get(maze_grid,f,i) == 0
         { 
             instance_create(tile_size*f,tile_size*i,obj_road);
         }
+    }
+}
+
+//- update the sprites
+with obj_wall
+{
+    var xx = x+16;
+    var yy = y+16;
+    
+    //If tiles are above us or below us that means we must connect them! okay?
+    if collision_point(xx,yy-32,obj_wall,false,true) != noone || collision_point(xx,yy+32,obj_wall,false,true) != noone
+    {
+        image_index = 1;
+    }
+    
+    if collision_point(xx,yy+32,obj_wall,false,true) == noone
+    {
+        image_index = 0;
     }
 }
 
@@ -540,6 +581,7 @@ ds_grid_copy(current_maze,maze_grid);
 
 //Passed all conditions.
 maze_conditions_passed = true;
+
 
 //Create player
 //instance_create(starting_x*tile_size+tile_size*2,starting_y*tile_size+tile_size,obj_player);
@@ -572,12 +614,12 @@ for(i=0;i&lt;maze_size;i++)
     {
         if ds_grid_get(maze_grid,f,i) == 1
         {
-            draw_sprite(spr_tile_small,0,f*tile_size,i*tile_size);
+            draw_sprite(spr_tile_small,1,f*tile_size,i*tile_size);
         }
     }
 }
 
-draw_sprite(spr_tile_small,1,carver_x*tile_size,carver_y*tile_size);
+draw_sprite(spr_grass,0,carver_x*tile_size,carver_y*tile_size);
 </string>
           </argument>
         </arguments>

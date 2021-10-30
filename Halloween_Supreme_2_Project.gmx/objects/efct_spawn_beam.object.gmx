@@ -30,6 +30,7 @@ time = 0;
 flick_offset = 0;
 
 scr_playSound(snd_beam,false,2,x,y,1,false);
+depth = -9999;
 </string>
           </argument>
         </arguments>
@@ -64,6 +65,7 @@ if (time mod 2) == 0
 time++;
 
 if size == 0 then instance_destroy();
+depth = -y-2;
 </string>
           </argument>
         </arguments>
@@ -88,7 +90,7 @@ if size == 0 then instance_destroy();
             <kind>1</kind>
             <string>var area = 8;
 draw_set_color(c_white);
-draw_rectangle(x-area*(size+flick_offset),y-view_hview,x+area*(size+flick_offset),y+4,false);
+draw_rectangle(x-area*(size+flick_offset),-100,x+area*(size+flick_offset),y+4,false);
 </string>
           </argument>
         </arguments>

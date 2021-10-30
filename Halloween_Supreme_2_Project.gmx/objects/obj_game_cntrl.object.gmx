@@ -27,10 +27,6 @@
             <kind>1</kind>
             <string>///INIT GAME
 
-//Init font
-global.fnt_normal = font_add_sprite_ext(spr_fnt_ui,"!'#$%()*,-./0123456789:;&lt;=&gt;ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}.?+",0,0);
-global.fnt_outlined = font_add_sprite_ext(spr_fnt_ui_outlined,"!'#$%()*,-./0123456789:;&lt;=&gt;ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}.?+",0,0);
-
 //Init player
 enum STATS
 {
@@ -45,8 +41,8 @@ enum STATS
 }
 
 global.player_stats = array_create(7);
-global.player_stats[STATS.maxHp] = 25; //Player maxHp
-global.player_stats[STATS.hp] = 25; //Player current HP
+global.player_stats[STATS.maxHp] = 30; //Player maxHp
+global.player_stats[STATS.hp] = 30; //Player current HP
 global.player_stats[STATS.maxMp] = 10; //Player max MP
 global.player_stats[STATS.mp] = 10; //Player current MP
 global.player_stats[STATS.attack] = 1; //Attack stat
@@ -82,6 +78,8 @@ enum battle_attack
 //Init unlocked actions
 //Note: An unlocked attack is set to 1, otherwise the attack is set to 0.
 global.unlocked_attacks = array_create(battle_attack.magic_pinch+1); //the size is equal to the amount of attacks.
+global.battle_items = array_create(2);
+
 
 //Music
 global.music = noone;
@@ -92,14 +90,6 @@ part_system_automatic_draw(global.part_system,false);
 
 //Inventory and ItemID
 init_inventory();
-
-scr_inven_add_item(itemID.sword,1);
-scr_inven_add_item(itemID.potion_hp,5);
-scr_inven_add_item(itemID.potion_mana,10);
-
-global.battle_items = array_create(2);
-global.battle_items[itemID.potion_hp] = 1;
-global.battle_items[itemID.potion_mana] = 1;
 
 
 //GLOBALVAR
@@ -118,12 +108,14 @@ game_time_s = 0;
 game_time_m = 0;
 game_time_h = 0;
 interm_init = false; //Whether or not the intermission initialization event has been run.
-target_xp = 10; //How much XP is required to level up.
+target_xp = 25; //How much XP is required to level up.
+game_state_previous = noone; //Container for previous game state.
+death_init = false;
+return_sequence = false; //Return to menu sequence
+death_fade = 0; //Death alpha
 
 //Equip level 1 kit.
 scr_level_kit(global.player_stats[STATS.level]);
-
-audio_play_sound(snd_The_Maw_of_the_Maze,5,true);
 
 </string>
           </argument>
@@ -150,12 +142,13 @@ audio_play_sound(snd_The_Maw_of_the_Maze,5,true);
             <string>///DEATH AND GAME STATE
 //Vars
 var battle_exists = instance_exists(obj_battleControl);
+var key_pause = keyboard_check_released(vk_escape) || keyboard_check_released(ord('P'));
 
 //Death
 if global.player_stats[STATS.hp] &lt;= 0
 {
     show_debug_message("The player is dead!");
-    game_restart(); //THIS SUCKS REPLACE WITH SOMETHING ELSE LATER!!!
+    game_state = "DEATH";
 }
 
 //-------GAME STATE---------
@@ -175,29 +168,28 @@ switch game_state
             //Select monsters
             var mob_list = ds_list_create();
             
-            if difficulty &lt; 10
+            if difficulty &lt; 9
             {
                 ds_list_add(mob_list,mobID.punkler);
             }
-            else if difficulty &gt;= 10 &amp;&amp; difficulty &lt; 25
+            else if difficulty &gt;= 9 &amp;&amp; difficulty &lt; 15
             {
                 ds_list_add(mob_list,mobID.punkler);
                 ds_list_add(mob_list,mobID.handsome_patch);
             }
-            else if difficulty &gt;= 25 &amp;&amp; difficulty &lt; 40
+            else if difficulty &gt;= 15 &amp;&amp; difficulty &lt; 25
             {
                 ds_list_add(mob_list,mobID.punkler);
                 ds_list_add(mob_list,mobID.handsome_patch);
                 ds_list_add(mob_list,mobID.corn_cretin);
             }
-            else if difficulty &gt;= 40 &amp;&amp; difficulty &lt;= 75
+            else if difficulty &gt;= 25 &amp;&amp; difficulty &lt;= 35
             {
                 ds_list_add(mob_list,mobID.handsome_patch);
                 ds_list_add(mob_list,mobID.corn_cretin);
             }
         
             scr_spawn_monster_random(mob_list[| irandom(ds_list_size(mob_list)-1)],1);
-            show_debug_message(string(mob_list[| irandom(ds_list_size(mob_list)-1)]));
             ds_list_destroy(mob_list);
         }
         
@@ -247,6 +239,38 @@ switch game_state
         }
     }
     break;
+    
+    case "DEATH":
+    {
+        if death_init == false
+        {
+            //The game ends with a sickening display of Cedrick's corpse. Probably.
+            death_init = true;
+            
+            //Music dies out and perhaps is replaced with sad music
+            audio_sound_gain(global.music,0,5*room_speed);
+            var snd_dead = audio_play_sound(snd_Eternal_Boredom,5,true);
+            audio_sound_gain(snd_dead,0.8,5*room_speed);
+        }
+        
+        //Exit to menu
+        if keyboard_check_released(vk_escape) || keyboard_check(ord('Z')) || keyboard_check(ord('X'))
+        {
+            return_sequence = true;
+        }
+        
+        //Death fade
+        if return_sequence == true
+        {
+            death_fade += 0.01;
+            
+            if death_fade &gt;= 1
+            {
+                room_goto(rm_menu);
+            }
+        }
+    }
+    break;
 }
 
 
@@ -256,7 +280,7 @@ if !battle_exists &amp;&amp; target_xp &lt;= global.player_stats[STATS.xp]
     global.player_stats[STATS.level]++;
     
     var _level = global.player_stats[STATS.level];
-    var hp_gain = 5*(_level-1);
+    var hp_gain = 5+5*(_level-1);
     
     
     global.player_stats[STATS.xp] = 0;
@@ -280,6 +304,49 @@ if !battle_exists &amp;&amp; target_xp &lt;= global.player_stats[STATS.xp]
 //--------STAT VALUE MANAGEMENT: CLAMPS!!-----
 global.player_stats[STATS.hp] = clamp(global.player_stats[STATS.hp],0,global.player_stats[STATS.maxHp]);
 global.player_stats[STATS.mp] = clamp(global.player_stats[STATS.mp],0,global.player_stats[STATS.maxMp]);
+
+
+//------PAUSE THE GAME-------
+if key_pause
+{
+    if game_state != "PAUSE"
+    {
+        game_state_previous = game_state;
+        game_state = "PAUSE";
+        
+        //Stop maw of the maze
+        if audio_exists(global.music)
+        {
+            audio_sound_gain(global.music,0,room_speed*1.3);
+        }
+        
+        //Play boredom
+        if !audio_is_playing(snd_Eternal_Boredom)
+        {
+            var snd = audio_play_sound(snd_Eternal_Boredom,5,true);
+            audio_sound_gain(snd,0.9,room_speed*0.9);
+        }
+    }
+    else if game_state == "PAUSE"
+    {
+        game_state = game_state_previous;
+        
+        //Resume music
+        //Play maw of the maze
+        if audio_exists(global.music)
+        {
+            audio_sound_gain(global.music,1,room_speed*0.9);
+        }
+        
+        //Stop boredom
+        if audio_is_playing(snd_Eternal_Boredom)
+        {
+            audio_stop_sound(snd_Eternal_Boredom);
+        }
+    }
+}
+
+
 </string>
           </argument>
         </arguments>
@@ -327,7 +394,6 @@ global.player_stats[STATS.mp] = clamp(global.player_stats[STATS.mp],0,global.pla
             <kind>1</kind>
             <string>///Draw UI and other elements.
 
-
 //Draw game timer
 draw_set_font(global.fnt_outlined);
 draw_set_color(c_white);
@@ -351,7 +417,7 @@ if !instance_exists(obj_battleControl)
     
     //Draw XP
     scale = 0.6;
-    draw_text_transformed(10,218,"EXP: "+string(global.player_stats[STATS.xp])+"/"+string(target_xp),scale,scale,0);
+    draw_text_transformed(10,218,"EXP: "+string(global.player_stats[STATS.xp])+"/"+string(target_xp)+" Level: "+string(global.player_stats[STATS.level]),scale,scale,0);
     
     //Draw HP and MP
     draw_set_color(c_red);
@@ -359,6 +425,56 @@ if !instance_exists(obj_battleControl)
     draw_set_color(c_aqua);
     draw_text_transformed(10,206,"MP: "+string(global.player_stats[STATS.mp])+"/"+string(global.player_stats[STATS.maxMp]),scale,scale,0);
 }
+
+if game_state == "PAUSE"
+{
+    draw_set_halign(fa_center);
+    draw_set_valign(fa_middle);
+    draw_set_font(global.fnt_normal);
+    
+    var str = "GAME PAUSED";
+    var str_w = string_width(str);
+    var str_h = string_height(str);
+    var xx = 256/2;
+    var yy = 256/2;
+    
+    draw_set_colour(c_black);
+    draw_rectangle(xx-str_w*2,yy-str_h,xx+str_w*2,yy+str_h,false);
+    
+    draw_set_colour(c_white);
+    draw_text_transformed(xx,yy,str,3,3,0);
+    
+    
+    draw_set_halign(fa_left);
+    draw_set_valign(fa_top);
+}
+else if game_state == "DEATH"
+{
+    draw_set_halign(fa_center);
+    draw_set_valign(fa_middle);
+    draw_set_font(global.fnt_normal);
+    
+    var str = "YOU DIED";
+    var str_w = string_width(str);
+    var str_h = string_height(str);
+    var xx = 256/2;
+    var yy = 256/2;
+    
+    draw_set_colour(c_black);
+    draw_rectangle(xx-str_w*2,yy-str_h,xx+str_w*2,yy+str_h,false);
+    
+    draw_set_colour(c_red);
+    draw_text_transformed(xx,yy,str,3,3,0);
+    
+    
+    draw_set_halign(fa_left);
+    draw_set_valign(fa_top);
+    
+    
+    //Death fade
+    draw_sprite_stretched_ext(spr_black,0,0,0,256,224,c_white,death_fade);
+}
+
 //TEMPORARY: Draw the inventory
 /*var drawn_items = 0;
 draw_set_font(global.fnt_outlined);
