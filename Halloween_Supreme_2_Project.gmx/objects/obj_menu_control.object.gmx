@@ -30,6 +30,11 @@ title_size = 0;
 title_size_rate_reversed = 1; //-1 to reverse
 title_size_rate = 0.000075;
 
+if instance_exists(obj_maze_generator)
+{
+    with obj_maze_generator { instance_destroy(); }   
+}
+
 
 //Music
 if !audio_is_playing(snd_Eternal_Boredom)

@@ -41,7 +41,7 @@ untouched cells, to avoid creating circular loops in the maze.
 randomize();
 
 //RULES: maze_size must be an odd number.
-maze_size = min(11+maze_difficulty*2,75);
+maze_size = min(9+maze_difficulty*2,75);
 tile_size = 32;
 path_length = 2;
 maze_grid = ds_grid_create(maze_size,maze_size);
@@ -197,7 +197,7 @@ if audio_is_playing(snd_Eternal_Boredom)
           <argument>
             <kind>1</kind>
             <string>///CARVE THE LABYRINTH!
-if game_state == "PAUSE" || game_state == "DEATH" then exit;
+if game_state == "PAUSE" || game_state == "DEATH" || game_state == "WIN" then exit;
 
 //NOTE: When checking for grid coordinates, an invalid coordinate will also return 0.
 if maze_complete == false
@@ -499,7 +499,7 @@ else
 }
 
 //Place keys
-var key_amt = 1 + difficulty div 10; //NOTE: Must not exceed potential dead ends! Should be impossible under normal circumstances.
+var key_amt = 1 + maze_difficulty div 7; //NOTE: Must not exceed potential dead ends! Should be impossible under normal circumstances.
 var dead_end_list = ds_list_create();
 
 for(i=0;i&lt;maze_size;i++)

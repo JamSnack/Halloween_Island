@@ -73,11 +73,12 @@ enum battle_attack
     
     //Magic attacks can be listed in any order.
     magic_pinch,
+    kindness,
 }
 
 //Init unlocked actions
-//Note: An unlocked attack is set to 1, otherwise the attack is set to 0.
-global.unlocked_attacks = array_create(battle_attack.magic_pinch+1); //the size is equal to the amount of attacks.
+//Note: An unlocked attack is set to 1, otherwise the attack is set to 0 (default value of array_create).
+global.unlocked_attacks = array_create(battle_attack.kindness+1); //the size is equal to the amount of attacks.
 global.battle_items = array_create(2);
 
 
@@ -111,6 +112,7 @@ interm_init = false; //Whether or not the intermission initialization event has 
 target_xp = 25; //How much XP is required to level up.
 game_state_previous = noone; //Container for previous game state.
 death_init = false;
+win_init = false;
 return_sequence = false; //Return to menu sequence
 death_fade = 0; //Death alpha
 
@@ -149,6 +151,12 @@ if global.player_stats[STATS.hp] &lt;= 0
 {
     show_debug_message("The player is dead!");
     game_state = "DEATH";
+}
+
+//----------WIN CONDITION-------------
+if maze_difficulty &gt; 10
+{
+    game_state = "WIN";
 }
 
 //-------GAME STATE---------
@@ -254,7 +262,7 @@ switch game_state
         }
         
         //Exit to menu
-        if keyboard_check_released(vk_escape) || keyboard_check(ord('Z')) || keyboard_check(ord('X'))
+        if keyboard_check_released(vk_escape) || keyboard_check_released(ord('Z')) || keyboard_check_released(ord('X'))
         {
             return_sequence = true;
         }
@@ -263,6 +271,43 @@ switch game_state
         if return_sequence == true
         {
             death_fade += 0.01;
+            
+            if death_fade &gt;= 1
+            {
+                room_goto(rm_menu);
+            }
+        }
+    }
+    break;
+    
+    case "WIN":
+    {
+        if win_init == false
+        {
+            win_init = true;
+            
+            //Music dies out and perhaps is replaced with VICTORY JIGS!
+            audio_sound_gain(global.music,0,5*room_speed);
+            var snd_dead = audio_play_sound(snd_Eternal_Boredom,5,true);
+            audio_sound_gain(snd_dead,0.8,5*room_speed);
+        }
+        
+        //Exit to menu
+        if keyboard_check_released(vk_escape) || keyboard_check_released(ord('Z')) || keyboard_check_released(ord('X'))
+        {
+            return_sequence = true;
+        }
+        
+        //Death fade, reused
+        
+        if death_fade &lt; 1
+        {
+            death_fade += 0.001;
+        }
+        
+        if return_sequence == true
+        {
+            death_fade += 0.005; //Add to death_fade a second time to increase the rate.
             
             if death_fade &gt;= 1
             {
@@ -298,7 +343,9 @@ if !battle_exists &amp;&amp; target_xp &lt;= global.player_stats[STATS.xp]
     
     scr_level_kit(_level);
     
-    target_xp = 10*_level+(10*(10* _level div 2));
+    target_xp = 25*power(_level,2) - (25*_level);
+    
+    audio_play_sound(snd_level_up,6,false);
 }
 
 //--------STAT VALUE MANAGEMENT: CLAMPS!!-----
@@ -369,7 +416,7 @@ if key_pause
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>scr_spawn_monster(mobID.sphere_elite,mouse_x,mouse_y);
+            <string>//scr_spawn_monster(mobID.sphere_elite,mouse_x,mouse_y);
 </string>
           </argument>
         </arguments>
@@ -399,8 +446,8 @@ draw_set_font(global.fnt_outlined);
 draw_set_color(c_white);
 
 var scale = 0.75;
-
-draw_text(10,10,string(game_time_h)+":"+string(game_time_m)+":"+string(game_time_s)+"."+string(game_time_ms));
+var str_time = string(game_time_h)+":"+string(game_time_m)+":"+string(game_time_s)+"."+string(game_time_ms);
+draw_text(10,10,str_time);
 
 if !instance_exists(obj_battleControl)
 {
@@ -473,6 +520,39 @@ else if game_state == "DEATH"
     
     //Death fade
     draw_sprite_stretched_ext(spr_black,0,0,0,256,224,c_white,death_fade);
+}
+else if game_state == "WIN"
+{
+    //WIN(death) fade
+    draw_sprite_stretched_ext(spr_black,0,0,0,256,224,c_white,death_fade);
+
+    draw_set_halign(fa_center);
+    draw_set_valign(fa_middle);
+    draw_set_font(global.fnt_normal);
+    
+    var str = "YOU ESCAPED";
+    var str_w = string_width(str);
+    var str_h = string_height(str);
+    var xx = 256/2;
+    var yy = 256/2-60;
+    
+    draw_set_colour(c_black);
+    draw_rectangle(xx-str_w*2,yy-str_h,xx+str_w*2,yy+str_h,false);
+    
+    draw_set_colour(c_white);
+    draw_text_transformed(xx,yy-15,"Congratulations!",2,2,0);
+    draw_text_transformed(xx,yy,str,3,3,0);
+    
+    draw_set_halign(fa_left);
+    draw_text(xx,yy+15,"Your time: "+str_time);
+    draw_set_valign(fa_top);
+}
+
+if game_state == "DEATH" || game_state == "WIN"
+{
+    draw_set_font(global.fnt_outlined);
+    draw_set_colour(c_white);
+    draw_text(5,210,"Press 'Esc', 'Z', or 'X' to return to the menu.");
 }
 
 //TEMPORARY: Draw the inventory

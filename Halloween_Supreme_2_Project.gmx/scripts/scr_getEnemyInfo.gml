@@ -21,7 +21,7 @@ switch argument0
     
     case mobID.handsome_patch:
     {
-        info[0] = "Handsome Patch Protector";
+        info[0] = "Notorious Guapo";
         info[1] = 3+(difficulty div 2);
         info[2] = 25+(difficulty div 2)*2;
     }

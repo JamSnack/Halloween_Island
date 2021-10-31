@@ -67,6 +67,8 @@ var _x = diff_created*5+(diff_created*diff_created); //XP Reward
 global.player_stats[STATS.xp] += _x;
 
 scr_hudMessage("+"+string(_x)+" XP",global.fnt_normal,3,c_purple);
+
+audio_play_sound(snd_Collect,6,false);
 </string>
           </argument>
         </arguments>

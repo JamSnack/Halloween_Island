@@ -56,8 +56,6 @@ if (gen_state &lt; 5)
             <string>/// Centers the game window one step after it is resized.
 
 window_center();
-
-room_goto(rm_menu);
 </string>
           </argument>
         </arguments>
@@ -120,6 +118,9 @@ else if (display_get_width() &gt;= 768 &amp;&amp; display_get_height() &gt;= 672
 
 else if (display_get_width() &gt;= 512 &amp;&amp; display_get_height() &gt;= 448)
     event_perform(ev_keypress, vk_f2);
+    
+
+room_goto(rm_menu);
 </string>
           </argument>
         </arguments>

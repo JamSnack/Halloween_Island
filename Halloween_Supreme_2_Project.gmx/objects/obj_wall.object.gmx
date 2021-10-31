@@ -28,6 +28,8 @@
             <string>image_speed = 0;
 image_index = 0;
 depth = -y;
+
+colour = make_colour_hsv(160,122,10);
 </string>
           </argument>
         </arguments>
@@ -54,7 +56,7 @@ depth = -y;
 
 if point_in_rectangle(x,y,view_xview-32-offset,view_yview-32-offset,view_xview+view_wview+32+offset,view_yview+view_hview+32+offset)
 {
-    draw_sprite_ext(sprite_index,0,x,y+32+8,1,-1,0,c_black,0.75);
+    draw_sprite_ext(sprite_index,0,x,y+32+8,1,-1,0,colour,0.74);
     draw_self();
 }
 </string>

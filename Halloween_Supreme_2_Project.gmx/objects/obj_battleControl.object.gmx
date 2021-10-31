@@ -88,7 +88,7 @@ init_instance = 0; //The instance that started the battle. If we kill the enemy 
           <argument>
             <kind>1</kind>
             <string>//Exit conditions
-if game_state == "PAUSE" || game_state == "DEATH" then exit;
+if game_state == "PAUSE" || game_state == "DEATH" || game_state == "WIN" then exit;
 
 //------------Gather input-------------
 var key_select = (keyboard_check_released(vk_enter) || keyboard_check_released(ord('Z')));
@@ -217,6 +217,8 @@ if player_turn == true &amp;&amp; battle_exit == false
                 //Construct the attack string and list the possible attacks
                 if attack_string == ""
                 {
+                    ds_list_clear(possible_attacks);
+                
                     for(str_index=0;str_index&lt;array_length_1d(global.unlocked_attacks);str_index++)
                     {
                         var _attack = global.unlocked_attacks[str_index];
@@ -254,6 +256,8 @@ if player_turn == true &amp;&amp; battle_exit == false
                 //Construct the item string and list the possible items
                 if item_string == ""
                 {
+                    ds_list_clear(possible_items);
+                
                     for(str_index=0;str_index&lt;array_length_1d(global.battle_items);str_index++)
                     {
                         //var _item = global.battle_items[str_index];
@@ -270,16 +274,17 @@ if player_turn == true &amp;&amp; battle_exit == false
                 }
                 
                 //Select an option and execute that attack!
-                if key_select &amp;&amp; global.inventory[| item_action_selected] &gt; 0
+                if key_select &amp;&amp; ds_list_size(possible_items) &gt; 0 &amp;&amp; global.inventory[| possible_items[| item_action_selected]] &gt; 0
                 {
                     scr_executeItem(possible_items[| item_action_selected]);
+                    audio_play_sound(snd_item_eat,6,false);
                 }
             }
             break;
             
             case 2: //Run option
             {
-                if (irandom(100) &gt;= enemy_level/global.player_stats[STATS.level])
+                if (irandom(100) &gt;= min(50,(enemy_level-global.player_stats[STATS.level])*2))
                 {
                     battle_timer = 0;
                     battle_exit = true;
@@ -291,6 +296,8 @@ if player_turn == true &amp;&amp; battle_exit == false
                     {
                         init_instance.flee_timer = 60; //Disable fled enemies
                     }
+                    
+                    audio_play_sound(snd_escape,6,false);
                 }
                 else if (battle_exit == false)
                 {
@@ -307,7 +314,8 @@ else if battle_exit == false
     if battle_timer &gt; room_speed*2
     {
         //The enemy executes an attack!
-        var dam =  irandom_range(enemy_level*4-enemy_level,enemy_level*4);
+        var dam =  irandom_range(enemy_level+enemy_level/2,enemy_level*2);
+        
         global.player_stats[STATS.hp] -= dam;
         global.player_stats[STATS.mp] += 10; //passive mana regen
         battle_string += ("You take "+string(dam)+" damage.#");

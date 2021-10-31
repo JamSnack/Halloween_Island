@@ -14,6 +14,10 @@
     <sound>sound\snd_The_Maw_of_the_Maze</sound>
     <sound>sound\snd_rewind</sound>
     <sound>sound\snd_Eternal_Boredom</sound>
+    <sound>sound\snd_level_up</sound>
+    <sound>sound\snd_item_eat</sound>
+    <sound>sound\snd_escape</sound>
+    <sound>sound\snd_Collect</sound>
   </sounds>
   <sprites name="sprites">
     <sprites name="JamSnack's Sprites">

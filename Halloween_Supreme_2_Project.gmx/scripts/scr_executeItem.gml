@@ -23,7 +23,7 @@ if instance_exists(obj_battleControl)
     {
         battle_string += item_message;
         action_finalized = noone;
-        player_turn = false;
+        //player_turn = false;
         battle_timer = 0;
         item_string = ""; //Flushing the item string will reinitialize it!
         item_action_selected = 0;
