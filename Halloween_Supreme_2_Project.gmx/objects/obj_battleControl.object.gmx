@@ -284,7 +284,7 @@ if player_turn == true &amp;&amp; battle_exit == false
             
             case 2: //Run option
             {
-                if (irandom(100) &gt;= min(50,(enemy_level-global.player_stats[STATS.level])*2))
+                if (irandom(100) &gt;= 10+min(50,(enemy_level-global.player_stats[STATS.level])*3))
                 {
                     battle_timer = 0;
                     battle_exit = true;
@@ -314,7 +314,7 @@ else if battle_exit == false
     if battle_timer &gt; room_speed*2
     {
         //The enemy executes an attack!
-        var dam =  irandom_range(enemy_level+enemy_level/2,enemy_level*2);
+        var dam =  1+irandom_range(enemy_level+enemy_level/2,floor(enemy_level*2.2));
         
         global.player_stats[STATS.hp] -= dam;
         global.player_stats[STATS.mp] += 10; //passive mana regen
@@ -473,7 +473,7 @@ if image_alpha == 0 &amp;&amp; battle_exit == true &amp;&amp; death_explosion ==
 //NOTE: Replace reward values with more intelligent functions later.
 var reward_exp = (enemy_hp div 6) + enemy_level*(6+enemy_level);
 var reward_gold = enemy_level*100;
-var reward_loot = choose(noone,itemID.potion_hp,itemID.potion_mana);
+var reward_loot = choose(noone,noone,itemID.potion_hp,itemID.potion_mana);
 
 //Enemy defeated?
 if enemy_hp &lt;= 0

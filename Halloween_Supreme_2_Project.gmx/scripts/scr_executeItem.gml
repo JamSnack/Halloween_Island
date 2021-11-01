@@ -26,6 +26,7 @@ if instance_exists(obj_battleControl)
         //player_turn = false;
         battle_timer = 0;
         item_string = ""; //Flushing the item string will reinitialize it!
+        attack_string = "";
         item_action_selected = 0;
         
         if ds_exists(possible_items,ds_type_list) then ds_list_destroy(possible_items);

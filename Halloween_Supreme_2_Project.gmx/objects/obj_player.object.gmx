@@ -101,7 +101,7 @@ else
     }
     
     //UNLOCK THE DOOR IF WE CAN!
-    if instance_exists(obj_door) &amp;&amp; distance_to_object(obj_door) &lt; 8 &amp;&amp; obj_door.unlocked == true
+    if instance_exists(obj_door) &amp;&amp; distance_to_object(obj_door) &lt; 4 &amp;&amp; obj_door.unlocked == true
     {
         with obj_door
         {

@@ -56,6 +56,64 @@ if (gen_state &lt; 5)
             <string>/// Centers the game window one step after it is resized.
 
 window_center();
+window_set_fullscreen(false);
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="3" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if room == rm_init
+{
+    anim_time++;
+    
+    if anim_time &lt; room_speed*6
+    {
+        anim_text = "JamSnack Presents...";
+    
+        if anim_time &lt; room_speed*4
+        {
+            image_alpha = anim_time/(room_speed*4);
+            anim_size = 1/(anim_time/(room_speed*4));
+        }
+    }
+    else if anim_time &gt;= room_speed*6 &amp;&amp; anim_time &lt; room_speed*12
+    {
+        var _time = anim_time-room_speed*6;
+    
+        anim_text = "Another riveting Halloween Supreme entry...";
+        
+        if _time &lt; room_speed*4
+        {
+            image_alpha = (_time)/(room_speed*4);
+            anim_size = 0.5/((_time)/(room_speed*4));
+        }
+    }
+    else room_goto(rm_menu);
+    
+    
+    //Skip animation
+    if keyboard_key != 0
+    {
+        anim_time += 10;
+    }
+}
 </string>
           </argument>
         </arguments>
@@ -118,9 +176,50 @@ else if (display_get_width() &gt;= 768 &amp;&amp; display_get_height() &gt;= 672
 
 else if (display_get_width() &gt;= 512 &amp;&amp; display_get_height() &gt;= 448)
     event_perform(ev_keypress, vk_f2);
-    
 
-room_goto(rm_menu);
+    
+//PRESENTATION SCREEN
+//Animation
+anim_time = 0;
+anim_text = "";
+anim_size = 0;
+
+//Music
+if !audio_is_playing(snd_Eternal_Boredom)
+{
+    audio_play_sound(snd_Eternal_Boredom,5,true);
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="64">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Game presentation
+if room == rm_init
+{
+    draw_set_halign(fa_center);
+    draw_set_font(global.fnt_normal);
+    draw_set_alpha(image_alpha);
+    draw_text_transformed(256/2,224/2,anim_text,anim_size*2,anim_size*2,0);
+    draw_set_alpha(1);
+}
 </string>
           </argument>
         </arguments>
@@ -282,7 +381,30 @@ scr_wind_scale(1);
             <kind>1</kind>
             <string>/// TEMPORARY
 
-game_restart();
+//game_restart();
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="10" enumb="117">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>window_set_fullscreen(true);
 </string>
           </argument>
         </arguments>

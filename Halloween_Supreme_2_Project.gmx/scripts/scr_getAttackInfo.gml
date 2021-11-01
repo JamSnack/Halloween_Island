@@ -23,7 +23,7 @@ switch argument0
         
         if global.player_stats[STATS.mp] < info[2]
         {
-            info[0] = "-Magic Pinch (low MP)"; //Name
+            info[0] = "Weak Magic Pinch: (low MP)"; //Name
             info[1] = irandom_range(1+p_level,floor(3+p_level*1.5)); //Damage
             info[2] = 0; //MP Cost
         }
@@ -56,8 +56,16 @@ switch argument0
     
     case battle_attack.obliterate:
     {
-        info[0] = "Destroy"; //Name
-        info[1] = irandom_range(15,40); //Damage
+        info[0] = "Obliterate"; //Name
+        info[1] = irandom_range(15,35); //Damage
+        info[2] = 0; //MP Cost
+    }
+    break;
+    
+    case battle_attack.annihilate:
+    {
+        info[0] = "Annihilate"; //Name
+        info[1] = irandom_range(25,45); //Damage
         info[2] = 0; //MP Cost
     }
     break;
@@ -65,7 +73,7 @@ switch argument0
     case battle_attack.remove_flesh:
     {
         info[0] = "Remove Flesh"; //Name
-        info[1] = irandom_range(25,45); //Damage
+        info[1] = irandom_range(35,60); //Damage
         info[2] = 0; //MP Cost
     }
     break;
@@ -75,7 +83,7 @@ switch argument0
         var _zh = p_level*2;
         var s_zh = string(_zh);
         
-        info[0] = "Be Kind: +"+s_zh+" MP, Enemy +"+s_zh+" HP"; //Name
+        info[0] = "Be Kind: "+s_zh+" is added to MP and Enemy HP."; //Name
         info[1] = _zh; //Damage
         info[2] = 0; //MP Cost
     }

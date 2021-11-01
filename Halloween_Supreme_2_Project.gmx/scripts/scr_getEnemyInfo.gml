@@ -5,9 +5,9 @@ switch argument0
 {
     case mobID.Apro:
     {
-        info[0] = choose("Rabid Oinkling","Halloween Ham","Oinker Supreme"); //Name
-        info[1] = 25; //Level
-        info[2] = 2500; //Max HP
+        info[0] = choose("Halloween Ham"); //Name
+        info[1] = 10+difficulty; //Level
+        info[2] = 100+difficulty*5; //Max HP
     }
     break;
     

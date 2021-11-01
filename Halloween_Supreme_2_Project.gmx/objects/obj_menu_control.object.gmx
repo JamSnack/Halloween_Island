@@ -101,6 +101,8 @@ draw_set_halign(fa_center);
 draw_set_font(global.fnt_normal);
 draw_text_transformed(224/2+16,180,"Press 'Z' to Play",2.75,2.75,0);
 draw_set_halign(fa_left);
+
+draw_sprite(spr_tutorial,0,70,55);
 </string>
           </argument>
         </arguments>

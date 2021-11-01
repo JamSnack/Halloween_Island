@@ -69,6 +69,7 @@ enum battle_attack
     smash,
     destroy,
     obliterate,
+    annihilate,
     remove_flesh,
     
     //Magic attacks can be listed in any order.
@@ -108,6 +109,7 @@ game_time_ms = 0; //These game_time_# variables are used when drawing the timer.
 game_time_s = 0;
 game_time_m = 0;
 game_time_h = 0;
+difficulty_time = 0;
 interm_init = false; //Whether or not the intermission initialization event has been run.
 target_xp = 25; //How much XP is required to level up.
 game_state_previous = noone; //Container for previous game state.
@@ -115,6 +117,7 @@ death_init = false;
 win_init = false;
 return_sequence = false; //Return to menu sequence
 death_fade = 0; //Death alpha
+boss_spawned = false; //Whether or not a required boss mob has been spawned in the maze.
 
 //Equip level 1 kit.
 scr_level_kit(global.player_stats[STATS.level]);
@@ -180,25 +183,42 @@ switch game_state
             {
                 ds_list_add(mob_list,mobID.punkler);
             }
-            else if difficulty &gt;= 9 &amp;&amp; difficulty &lt; 15
+            else if difficulty &gt;= 9 &amp;&amp; difficulty &lt; 20
             {
                 ds_list_add(mob_list,mobID.punkler);
                 ds_list_add(mob_list,mobID.handsome_patch);
             }
-            else if difficulty &gt;= 15 &amp;&amp; difficulty &lt; 25
+            else if difficulty &gt;= 20 &amp;&amp; difficulty &lt; 40
             {
                 ds_list_add(mob_list,mobID.punkler);
                 ds_list_add(mob_list,mobID.handsome_patch);
                 ds_list_add(mob_list,mobID.corn_cretin);
             }
-            else if difficulty &gt;= 25 &amp;&amp; difficulty &lt;= 35
+            else if difficulty &gt;= 40
             {
                 ds_list_add(mob_list,mobID.handsome_patch);
                 ds_list_add(mob_list,mobID.corn_cretin);
             }
         
-            scr_spawn_monster_random(mob_list[| irandom(ds_list_size(mob_list)-1)],1);
+            scr_spawn_monster_random(mob_list[| irandom(ds_list_size(mob_list)-1)],1,false);
             ds_list_destroy(mob_list);
+        }
+        
+        //BOSS CONTROL
+        //HALLOWEEN HAM
+        if maze_difficulty == 10 &amp;&amp; !instance_exists(efct_overMessage) &amp;&amp; boss_spawned == false &amp;&amp; !instance_exists(obj_boss) &amp;&amp; (game_time mod 100 == 0)
+        {
+            boss_spawned = true;
+            scr_spawn_monster_random(mobID.Apro,1,true);
+            
+            if !instance_exists(obj_boss)
+            {
+                boss_spawned = false;
+            }
+            else
+            {
+                scr_overMessage("The Halloween Ham has arrived!",global.fnt_outlined,4,c_red);
+            }
         }
         
         //Update game-time during gameplay
@@ -209,14 +229,18 @@ switch game_state
         if (game_time_m != 0 &amp;&amp; game_time_m mod 60 == 0) { game_time_m = 0; game_time_h += 1; } //Hours
         
         //Update game difficulty based on game_time;
-        if game_time mod 2750 == 0
+        var rate = 25*difficulty-1;
+        difficulty_time++;
+        
+        if (difficulty_time mod (2750+rate)) == 0
         {
             difficulty++;
+            difficulty_time = 0;
             show_debug_message("Difficulty: "+string(difficulty));
         }
         
         //Regenerate HP and MP!
-        if !battle_exists &amp;&amp; game_time mod 360 == 0
+        if !battle_exists &amp;&amp; game_time mod 300 == 0
         {
             if global.player_stats[STATS.hp] &lt; global.player_stats[STATS.maxHp] then global.player_stats[STATS.hp] += 1;
             if global.player_stats[STATS.mp] &lt; global.player_stats[STATS.maxMp] then global.player_stats[STATS.mp] += 1;
@@ -268,6 +292,12 @@ switch game_state
         }
         
         //Death fade
+        if death_fade &lt; 1
+        {
+            death_fade += 0.001;
+        }
+        
+        
         if return_sequence == true
         {
             death_fade += 0.01;
@@ -354,7 +384,7 @@ global.player_stats[STATS.mp] = clamp(global.player_stats[STATS.mp],0,global.pla
 
 
 //------PAUSE THE GAME-------
-if key_pause
+if key_pause &amp;&amp; (game_state != "DEATH" &amp;&amp; game_state != "WIN")
 {
     if game_state != "PAUSE"
     {
@@ -417,6 +447,7 @@ if key_pause
           <argument>
             <kind>1</kind>
             <string>//scr_spawn_monster(mobID.sphere_elite,mouse_x,mouse_y);
+//global.player_stats[STATS.xp]+=100;
 </string>
           </argument>
         </arguments>
@@ -440,12 +471,10 @@ if key_pause
           <argument>
             <kind>1</kind>
             <string>///Draw UI and other elements.
-
-//Draw game timer
+var scale = 0.75;
+//Draw Time
 draw_set_font(global.fnt_outlined);
 draw_set_color(c_white);
-
-var scale = 0.75;
 var str_time = string(game_time_h)+":"+string(game_time_m)+":"+string(game_time_s)+"."+string(game_time_ms);
 draw_text(10,10,str_time);
 
@@ -453,14 +482,16 @@ if !instance_exists(obj_battleControl)
 {
 
     //Draw game difficulty
-    draw_text_transformed(10,28,"Difficulty: "+string(difficulty),scale,scale,0);
-    draw_text_transformed(10,36,"Maze Difficulty: "+string(maze_difficulty),scale,scale,0);
+    //draw_text_transformed(10,36,"Difficulty: "+string(difficulty),scale,scale,0);
+    draw_text_transformed(10,28,"Mazes Cleared: "+string(maze_difficulty-1),scale,scale,0);
     
     //Draw keys remaining
     if instance_exists(obj_key)
     {
-        draw_text_transformed(10,20,"Keys remaining: "+string(instance_number(obj_key)),scale,scale,0);
-    } else draw_text_transformed(10,20,"Door Unlocked",scale,scale,0);
+        draw_text_transformed(10,20,"Keys Remaining: "+string(instance_number(obj_key)),scale,scale,0);
+    } else if instance_exists(obj_boss)
+    {   draw_text_transformed(10,20,"Boss Remaining",scale,scale,0); }
+    else {   draw_text_transformed(10,20,"Door Unlocked",scale,scale,0); }
     
     //Draw XP
     scale = 0.6;
@@ -497,6 +528,9 @@ if game_state == "PAUSE"
 }
 else if game_state == "DEATH"
 {
+    //Death fade
+    draw_sprite_stretched_ext(spr_black,0,0,0,256,224,c_white,death_fade);
+
     draw_set_halign(fa_center);
     draw_set_valign(fa_middle);
     draw_set_font(global.fnt_normal);
@@ -513,13 +547,13 @@ else if game_state == "DEATH"
     draw_set_colour(c_red);
     draw_text_transformed(xx,yy,str,3,3,0);
     
+    draw_set_colour(c_white);
+    draw_set_halign(fa_left);
+    draw_text(xx,yy+15,"Your time: "+str_time);
+    
     
     draw_set_halign(fa_left);
     draw_set_valign(fa_top);
-    
-    
-    //Death fade
-    draw_sprite_stretched_ext(spr_black,0,0,0,256,224,c_white,death_fade);
 }
 else if game_state == "WIN"
 {
@@ -551,9 +585,14 @@ else if game_state == "WIN"
 if game_state == "DEATH" || game_state == "WIN"
 {
     draw_set_font(global.fnt_outlined);
+    draw_set_colour(c_black);
+    draw_rectangle(17,0,string_width("Press 'Esc', 'Z', or 'X' to return to the menu.")+27,12,false);
     draw_set_colour(c_white);
-    draw_text(5,210,"Press 'Esc', 'Z', or 'X' to return to the menu.");
+    draw_text(22,2,"Press 'Esc', 'Z', or 'X' to return to the menu.");
 }
+
+draw_set_halign(fa_left);
+draw_set_valign(fa_top);
 
 //TEMPORARY: Draw the inventory
 /*var drawn_items = 0;

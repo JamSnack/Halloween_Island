@@ -44,6 +44,7 @@
     <sprite>sprites\spr_logo</sprite>
     <sprite>sprites\spr_title</sprite>
     <sprite>sprites\spr_black</sprite>
+    <sprite>sprites\spr_tutorial</sprite>
   </sprites>
   <backgrounds name="background">
     <backgrounds name="JamSnack's Backgrounds">
@@ -114,6 +115,7 @@
     <object>objects\obj_door</object>
     <object>objects\obj_key</object>
     <object>objects\obj_monster</object>
+    <object>objects\obj_boss</object>
     <object>objects\efct_spawn_beam</object>
     <object>objects\OVERWORLD_PAUSE</object>
     <object>objects\efct_overMessage</object>

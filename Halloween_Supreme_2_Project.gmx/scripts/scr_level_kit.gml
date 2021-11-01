@@ -9,8 +9,10 @@ switch lvl
     case 1: { global.unlocked_attacks[battle_attack.pinch] = 1; } break;
     case 2: { global.unlocked_attacks[battle_attack.magic_pinch] = 1; } break;
     case 3: { global.unlocked_attacks[battle_attack.pinch] = 0; global.unlocked_attacks[battle_attack.slap] = 1; } break;
-    case 4: { global.unlocked_attacks[battle_attack.kindness] = 1; } break;
-    case 5: { global.unlocked_attacks[battle_attack.slap] = 0; global.unlocked_attacks[battle_attack.smash] = 1; } break;
+    case 4: { global.unlocked_attacks[battle_attack.slap] = 0; global.unlocked_attacks[battle_attack.smash] = 1; } break;
+    case 5: { global.unlocked_attacks[battle_attack.kindness] = 1; } break;
     case 6: { global.unlocked_attacks[battle_attack.smash] = 0; global.unlocked_attacks[battle_attack.destroy] = 1; } break;
-    case 7: { global.unlocked_attacks[battle_attack.destroy] = 0; global.unlocked_attacks[battle_attack.remove_flesh] = 1; } break;
+    case 7: { global.unlocked_attacks[battle_attack.destroy] = 0; global.unlocked_attacks[battle_attack.obliterate] = 1; } break;
+    case 8: { global.unlocked_attacks[battle_attack.obliterate] = 0; global.unlocked_attacks[battle_attack.annihilate] = 1; } break;
+    case 9: { global.unlocked_attacks[battle_attack.annihilate] = 0; global.unlocked_attacks[battle_attack.remove_flesh] = 1; } break;
 }

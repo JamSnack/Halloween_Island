@@ -37,7 +37,6 @@ vspd = 0;
 image_xscale = 0.25;
 image_yscale = 0.25;
 image_speed = 0;
-//mask_index = spr_cedrick;
 
 flee_timer = 1*room_speed; //If a battle is fled successfully, disable this enemy for a while.
 
@@ -116,17 +115,18 @@ if !collision_line(x,y,obj_player.x,obj_player.y,obj_wall,false,true)
 else if distance_to_point(target_x,target_y) &lt; 2 || (target_x == noone &amp;&amp; target_y == noone) || col != noone
 {
     //32 = tile_size;
-    target_x = (irandom(ds_grid_width(current_maze)*32)+16);
-    target_y = (irandom(ds_grid_width(current_maze)*32)+16);
+    target_x = ((irandom(ds_grid_width(current_maze)-1)*32)+16);
+    target_y = ((irandom(ds_grid_width(current_maze)-1)*32)+16);
     
     //Avoid setting a target point in an unreachable location.
     while col != noone
     {
-        target_x = (irandom(ds_grid_width(current_maze)*32)+16);
-        target_y = (irandom(ds_grid_width(current_maze)*32)+16);
+        target_x = ((irandom(ds_grid_width(current_maze)-1)*32)+16);
+        target_y = ((irandom(ds_grid_width(current_maze)-1)*32)+16);
         col = collision_point(target_x,target_y,obj_wall,false,true);
     }
     
+    path_end();
     path_calculated = false;
 }
 
@@ -157,6 +157,18 @@ if collision_rectangle(bbox_left+inset,bbox_top+inset,bbox_right-inset,bbox_bott
 */
 
 depth = -bbox_bottom-1;
+
+//---GET OUT OF THE DAMN DOOR----
+if instance_exists(obj_door) &amp;&amp; collision_point(x,y,obj_door,false,true)
+{
+    var is_boss = false;
+    
+    if object_index == obj_boss then is_boss = true;
+    
+    scr_spawn_monster_random(mob_id,1,is_boss);
+    instance_destroy();
+    show_debug_message("Error&gt; Relocated mob from inside door.");
+}
 </string>
           </argument>
         </arguments>
@@ -187,6 +199,7 @@ draw_text(x,y+15,"path_exists: "+string(path_exists(path)));
 draw_text(x,y+25,"name: "+string(id));
 draw_text(x,y+35,"target: "+string(target_x)+","+string(target_y)+" Blocked: "+string(collision_point(target_x,target_y,obj_wall,false,true)));
 draw_text(x,y+45,"time: "+string(time));
+draw_text(x,y+55,"Flee: "+string(flee_timer));
 
 </string>
           </argument>

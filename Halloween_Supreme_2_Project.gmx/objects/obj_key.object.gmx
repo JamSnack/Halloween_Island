@@ -48,10 +48,11 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//If this is the last key
+            <string>///TRIGGER UNLOCK EVENT OR REDUCE KEY AMT
+//If this is the last key
 if instance_exists(obj_maze_generator) then exit;
 
-if instance_number(obj_key) == 1
+if instance_number(obj_key) == 1 &amp;&amp; !instance_exists(obj_boss)
 {
     //Open the damn door
     if instance_exists(obj_door)
