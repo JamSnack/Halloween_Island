@@ -91,12 +91,12 @@ init_instance = 0; //The instance that started the battle. If we kill the enemy 
 if game_state == "PAUSE" || game_state == "DEATH" || game_state == "WIN" then exit;
 
 //------------Gather input-------------
-var key_select = (keyboard_check_released(vk_enter) || keyboard_check_released(ord('Z')));
-var key_left = (keyboard_check_released(vk_left) || keyboard_check_released(ord("A")));
-var key_right = (keyboard_check_released(vk_right) || keyboard_check_released(ord("D")));
-var key_cancel = (keyboard_check_released(ord('X')));
-var key_up = (keyboard_check_released(vk_up) || keyboard_check_released(ord("W")));
-var key_down = (keyboard_check_released(vk_down) || keyboard_check_released(ord("S")));
+var key_select = (keyboard_check_pressed(vk_enter) || keyboard_check_pressed(ord('Z')));
+var key_left = (keyboard_check_pressed(vk_left) || keyboard_check_pressed(ord("A")));
+var key_right = (keyboard_check_pressed(vk_right) || keyboard_check_pressed(ord("D")));
+var key_cancel = (keyboard_check_pressed(ord('X')));
+var key_up = (keyboard_check_pressed(vk_up) || keyboard_check_pressed(ord("W")));
+var key_down = (keyboard_check_pressed(vk_down) || keyboard_check_pressed(ord("S")));
 
 //-----------Animate the enemy---------
 if battle_exit == false
@@ -429,7 +429,7 @@ if battle_exit == true
 
 
 //---------MANAGE SOUNDS------------
-if key_left || key_right || key_select || key_up || key_down || key_cancel
+if battle_exit == false &amp;&amp; player_turn == true &amp;&amp; (key_left || key_right || key_select || key_up || key_down || key_cancel)
 {
     scr_playSound(snd_generic_selection,false,2,-1,-1,1,false);
 }
